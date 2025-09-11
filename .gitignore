@@ -1,0 +1,12 @@
+*.cache
+*.json
+*.vsidx
+*.v2
+*.bin
+*.sln
+*.csproj
+*.props
+*.targets
+/Backend/Calendify/obj
+/Backend/Database/obj
+/Backend/.vs
