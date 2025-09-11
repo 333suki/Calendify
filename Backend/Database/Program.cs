@@ -23,3 +23,40 @@ public class Group
     public string GroupName { get; set; }
     public string Description { get; set; }
 }
+
+public class Admin
+{
+    public int AdminID { get; set; }
+    public int UserID { get; set; }
+    public string Permissions { get; set; }
+}
+
+public class Event
+{
+    public int EventID { get; set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public DateOnly EventDate { get; set; }
+    public int CreateBy { get; set; }
+}
+
+public class OfficeAttendadnce
+{
+    public int AttendenceID { get; set; }
+    public int UserID { get; set; }
+    public DateOnly Date { get; set; }
+    public string Status { get; set; }
+}
+
+public class Room
+{
+    public int RoomID { get; set; }
+    public string RoomName { get; set; }
+    public int Capacity { get; set; }
+    public string Location { get; set; }
+}
+
+public class RoomBooking
+{
+    
+}
