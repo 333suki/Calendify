@@ -1,5 +1,4 @@
 *.cache
-*.json
 *.vsidx
 *.v2
 *.bin
@@ -10,3 +9,4 @@
 /Backend/Calendify/obj
 /Backend/Database/obj
 /Backend/.vs
+.idea/

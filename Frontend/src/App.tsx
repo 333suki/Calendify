@@ -1,18 +1,17 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./Login";
-import Dashboard from "./Dashboard";
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
-const App: React.FC = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </Router>
-  );
-};
+import Login from "./components/Login.tsx"
+import Dashboard from "./components/Dashboard.tsx";
 
-export default App;
+function App() {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<Login/>}/>
+                <Route path="/dashboard" element={<Dashboard />} />
+            </Routes>
+        </Router>
+    )
+}
+
+export default App
