@@ -10,3 +10,5 @@
 /Backend/Database/obj
 /Backend/.vs
 .idea/
+/Frontend/.vite/
+
