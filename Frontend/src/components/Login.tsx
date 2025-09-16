@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 import styles from "./Login.module.css";
 
+import calendarIcon from "../assets/calendar.svg";
+
+import personIcon from "../assets/person.svg";
+
+
 const Login: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -35,26 +40,19 @@ const Login: React.FC = () => {
 
 
     return (
-        <div>
-            <form onSubmit={handleLogin}>
-                <h1 className={styles.loginText}>Login</h1>
-                {errorMessage && (<p>{errorMessage}</p>)}
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit">Login</button>
-            </form>
+        <div className={styles.mainContainer}>
+            <div className={styles.loginContainer}>
+                <img className={styles.personIcon} src={personIcon} alt="Person"></img>
+                <h1 className={styles.title}>User Login</h1>
+                <form onSubmit={handleLogin} className={styles.form}>
+                    <input type= "text" id={styles.username} placeholder="Username"></input>
+                    <input type= "password" id={styles.password} placeholder="Password"></input>
+                    <button type="submit" className={styles.loginButton}>Login</button>
+                </form>
+                <a href="https://google.com"className={styles.forgotPassword}>Forgot password</a>
+                <a href="https://google.com" className={styles.signUp}>Sign Up</a>
+            </div>
+
         </div>
     );
 };

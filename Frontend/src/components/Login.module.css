@@ -1,3 +1,107 @@
 .loginText {
-    color: red;
+    color: rgb(255, 0, 191);
 }
+
+.mainContainer {
+    height: 100vh;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../assets/office-background.jpeg");
+    background-size: cover;
+    background-repeat: no-repeat;
+
+}
+
+
+form { 
+    display: flex;
+    flex-direction: column;
+    
+}
+
+input {
+    background-color: #d9d9d9;
+    border-radius: 32px;
+    border:none;
+    padding: 8px;
+    text-align: center;
+
+
+}
+
+#username {
+    margin-bottom: 16px;
+}
+
+#password {
+    margin-bottom: 6px;
+
+}
+
+input::placeholder{
+    text-align: center;
+    color: #4c566a;
+}
+
+.calendarIcon {
+    width: 250px;
+    height: 250px;
+}
+
+.loginContainer {
+    background-color: rgba(236, 239, 256, 0.6);
+    width: 400px;
+    height: 400px;
+    padding: 16px;
+    border-radius: 32px;
+    box-shadow: 0 4px 4px rgba(2, 7, 7, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.personIcon {
+    width: 50px;
+    height: 50px;
+    margin-top: 16px;
+    margin-bottom: 4px;
+}
+
+.title{
+    color: #3b4252;
+    font-size: 40px;
+    font-family: "Calibri";
+    margin-bottom: 24px;
+}
+
+.loginButton {
+    background-color: #3b4252;
+    color: #d9d9d9;
+    border: none;
+    border-radius: 32px;
+    padding: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 32px;
+    width: 150px;
+    align-self: center;
+}       
+
+
+.forgotPassword {
+    color: #3b4252;
+    text-decoration: underline;
+    cursor: pointer;
+    text-align: center;
+    backdrop-filter: blur(10px);
+
+}
+
+
+.signUp {
+    margin-top: 18px;
+}
+
