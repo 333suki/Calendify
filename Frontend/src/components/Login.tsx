@@ -3,10 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import styles from "./Login.module.css";
 
-import calendarIcon from "../assets/calendar.svg";
-
 import personIcon from "../assets/person.svg";
-
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState("");
@@ -45,14 +42,14 @@ const Login: React.FC = () => {
                 <img className={styles.personIcon} src={personIcon} alt="Person"></img>
                 <h1 className={styles.title}>User Login</h1>
                 <form onSubmit={handleLogin} className={styles.form}>
-                    <input type= "text" id={styles.username} placeholder="Username"></input>
-                    <input type= "password" id={styles.password} placeholder="Password"></input>
+                    <input type= "text" id={styles.username} placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required></input>
+                    <input type= "password" id={styles.password} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required></input>
+                    {errorMessage && (<p className={styles.errorMessage}>{errorMessage}</p>)}
                     <button type="submit" className={styles.loginButton}>Login</button>
                 </form>
-                <a href="https://google.com"className={styles.forgotPassword}>Forgot password</a>
+                <a href="https://google.com" className={styles.forgotPassword}>Forgot password</a>
                 <a href="https://google.com" className={styles.signUp}>Sign Up</a>
             </div>
-
         </div>
     );
 };

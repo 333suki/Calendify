@@ -1,10 +1,5 @@
-.loginText {
-    color: rgb(255, 0, 191);
-}
-
 .mainContainer {
     height: 100vh;
-    border: 1px solid black;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -12,38 +7,32 @@
     background-image: url("../assets/office-background.jpeg");
     background-size: cover;
     background-repeat: no-repeat;
-
 }
-
 
 form { 
     display: flex;
     flex-direction: column;
-    
 }
 
 input {
     background-color: #d9d9d9;
     border-radius: 32px;
-    border:none;
+    border: 2px solid #4c566a;
     padding: 8px;
     text-align: center;
-
-
 }
 
-#username {
-    margin-bottom: 16px;
-}
-
-#password {
-    margin-bottom: 6px;
-
+input:focus {
+    outline: none;
 }
 
 input::placeholder{
     text-align: center;
     color: #4c566a;
+}
+
+#username {
+    margin-bottom: 12px;
 }
 
 .calendarIcon {
@@ -53,9 +42,9 @@ input::placeholder{
 
 .loginContainer {
     background-color: rgba(236, 239, 256, 0.6);
-    width: 400px;
-    height: 400px;
-    padding: 16px;
+    /*width: 400px;*/
+    /*height: 400px;*/
+    padding: 16px 128px 24px 128px;
     border-radius: 32px;
     box-shadow: 0 4px 4px rgba(2, 7, 7, 0.2);
     display: flex;
@@ -70,38 +59,54 @@ input::placeholder{
     margin-bottom: 4px;
 }
 
-.title{
+.title {
     color: #3b4252;
     font-size: 40px;
-    font-family: "Calibri";
     margin-bottom: 24px;
 }
 
 .loginButton {
     background-color: #3b4252;
+    transition: background-color 0.4s;
     color: #d9d9d9;
     border: none;
     border-radius: 32px;
     padding: 8px;
     font-size: 16px;
     cursor: pointer;
-    margin-top: 32px;
+    margin-top: 16px;
     width: 150px;
     align-self: center;
-}       
+}
 
+.loginButton:hover {
+    background-color: #4c566a;
+    transition: background-color 0.4s;
+}
 
 .forgotPassword {
     color: #3b4252;
     text-decoration: underline;
     cursor: pointer;
     text-align: center;
-    backdrop-filter: blur(10px);
-
+    margin-top: 4px;
 }
 
+.forgotPassword:focus {
+    outline: none;
+    color: #4c566a;
+}
 
 .signUp {
-    margin-top: 18px;
+    color: #3b4252;
+    text-decoration: underline;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 16px;
 }
 
+.errorMessage {
+    color: #bf616a;
+    text-align: center;
+    margin-top: 4px;
+}
