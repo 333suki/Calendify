@@ -39,16 +39,30 @@ const Login: React.FC = () => {
     return (
         <div className={styles.mainContainer}>
             <div className={styles.loginContainer}>
-                <img className={styles.personIcon} src={personIcon} alt="Person"></img>
-                <h1 className={styles.title}>User Login</h1>
-                <form onSubmit={handleLogin} className={styles.form}>
-                    <input type= "text" id={styles.username} placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required></input>
-                    <input type= "password" id={styles.password} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required></input>
-                    {errorMessage && (<p className={styles.errorMessage}>{errorMessage}</p>)}
-                    <button type="submit" className={styles.loginButton}>Login</button>
+                <form onSubmit={handleLogin}>
+                    <div className={styles.personIcon}>
+                        <img src={personIcon} alt="Person"></img>
+                    </div>
+                    <h1>Login</h1>
+                    <div className={styles.inputBox}>
+                        <input type="text" placeholder="Username" value={username} onChange={(e) => {setUsername(e.target.value); setErrorMessage("")}} required/>
+                    </div>
+                    <div className={styles.inputBox}>
+                        <input type="password" placeholder="Password" value={password} onChange={(e) => {setPassword(e.target.value); setErrorMessage("")}} required/>
+                    </div>
+                    <div className={styles.errorForgot}>
+                        <div className={styles.error}>
+                            {errorMessage && (<p className={styles.errorMessage}>{errorMessage}</p>)}
+                        </div>
+                        <div className={styles.forgot}>
+                            <a href="https://google.com">Forgot password</a>
+                        </div>
+                    </div>
+                    <button type="submit">Login</button>
+                    <div className={styles.signUpLink}>
+                        <p>Dont have an account? <a href="https://google.com">Sign Up</a></p>
+                    </div>
                 </form>
-                <a href="https://google.com" className={styles.forgotPassword}>Forgot password</a>
-                <a href="https://google.com" className={styles.signUp}>Sign Up</a>
             </div>
         </div>
     );
