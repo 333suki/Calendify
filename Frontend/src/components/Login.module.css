@@ -92,7 +92,7 @@
 .mainContainer button {
     width: 100%;
     height: 45px;
-    background-color: #5e81ac;
+    background-color: #4c566a;
     transition: background-color 0.4s;
     border: none;
     outline: none;
@@ -105,7 +105,12 @@
 }
 
 .mainContainer button:hover {
-    background-color: #81a1c1;
+    background-color: #3b4252;
+    transition: background-color 0.4s;
+}
+
+.mainContainer button:focus {
+    background-color: #3b4252;
     transition: background-color 0.4s;
 }
 
