@@ -5,7 +5,7 @@ import styles from "./Login.module.css";
 
 import personIcon from "../assets/person.svg";
 
-const Login: React.FC = () => {
+export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -82,5 +82,3 @@ async function fakeLoginApi(username: string, password: string) {
         }
     );
 }
-
-export default Login;

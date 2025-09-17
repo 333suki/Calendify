@@ -1,16 +1,19 @@
-import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Login from "./components/Login.tsx"
 import Dashboard from "./components/Dashboard.tsx";
+import Login from "./components/Login.tsx"
+import ProtectedRoutes from "./utils/ProtectedRoutes.tsx";
 
 function App() {
     return (
-        <Router>
+        <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Login/>}/>
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route element={<ProtectedRoutes/>}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                </Route>
             </Routes>
-        </Router>
+        </BrowserRouter>
     )
 }
 
