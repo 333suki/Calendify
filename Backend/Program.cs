@@ -24,6 +24,33 @@ app.MapGet("/", (DatabaseContext db) =>
 
 });
 
+app.MapPost("auth/register", (Backend.Dtos.RegisterRequest? registerRequest, DatabaseContext db) =>
+{
+    //db.Users.Add(new Backend.Models.User("admin", "admin123"));
+    //db.SaveChanges();
+
+    if (registerRequest is null)
+    {
+        return Results.BadRequest();
+    }
+
+    if (registerRequest.Username is null || registerRequest.Password is null)
+    {
+        return Results.BadRequest();
+    }
+
+    Backend.Models.User? user = db.Users.FirstOrDefault(user => user.Username == registerRequest.Username);
+
+    if (user is not null)
+    {
+        return Results.Conflict();
+    }
+
+    db.Users.Add(new Backend.Models.User(registerRequest.Username, registerRequest.Password));
+    db.SaveChanges();
+    return Results.Created();
+});
+
 app.MapPost("auth/login", (Backend.Dtos.LoginRequest? loginRequest, DatabaseContext db) =>
 {
     //db.Users.Add(new Backend.Models.User("admin", "admin123"));
