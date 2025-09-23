@@ -2,13 +2,11 @@
 *.vsidx
 *.v2
 *.bin
-*.sln
-*.csproj
 *.props
 *.targets
-/Backend/Calendify/obj
-/Backend/Database/obj
 /Backend/.vs
 .idea/
 /Frontend/.vite/
+/Backend/obj/
+/Backend/bin/
 
