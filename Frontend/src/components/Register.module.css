@@ -60,21 +60,17 @@
     color: #eceff4;
 }
 
-.mainContainer .errorForgot {
+.mainContainer .errorBox {
     display: flex;
-    margin: -15px 0 15px;
-    justify-content: space-between;
+    margin: -15px 0 15px 0;
+    justify-content: center;
 }
 
-.errorForgot .forgot {
-    margin: 0 8px 0 0;
-}
-
-.errorForgot .error {
+.errorBox .error {
     margin: 0 0 0 8px;
 }
 
-.errorForgot .error p {
+.errorMessage {
     font-size: 16px;
     color: darkred;
 }

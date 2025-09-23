@@ -61,12 +61,13 @@
 }
 
 .mainContainer .errorForgot {
-    display: flex;
-    margin: -15px 0 15px;
-    justify-content: space-between;
+    display: grid;
+    margin: -15px 0 15px 0;
+    grid-template-columns: 7fr 5fr;
 }
 
 .errorForgot .forgot {
+    text-align: right;
     margin: 0 8px 0 0;
 }
 
@@ -74,7 +75,7 @@
     margin: 0 0 0 8px;
 }
 
-.errorForgot .error p {
+.errorMessage {
     font-size: 16px;
     color: darkred;
 }
@@ -114,22 +115,22 @@
     transition: background-color 0.4s;
 }
 
-.loginContainer .signUpLink {
+.loginContainer .registerLink {
     font-size: 14px;
     text-align: center;
     margin: 20px 0 15px;
 }
 
-.signUpLink p {
+.registerLink p {
     color: #eceff4;
 }
 
-.signUpLink p a {
+.registerLink p a {
     color: #eceff4;
     text-decoration: none;
     font-weight: 600;
 }
 
-.signUpLink p a:hover {
+.registerLink p a:hover {
     text-decoration: underline;
 }

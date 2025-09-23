@@ -16,22 +16,14 @@ export default function Login() {
 
         try {
             const response = await fakeLoginApi(username, password);
-
             if (response.success) {
-                // role might be undefined, so fallback to "guest"
-                localStorage.setItem("role", response.role ?? "guest");
-
-                if (response.role === "admin") {
-                    navigate("/dashboard");
-                } else {
-                    setErrorMessage("Unauthorized user. Only admins can log in.");
-                }
+                // localStorage.setItem("role", response.role ?? "guest");
+                navigate("/dashboard");
             } else {
-                // message might be undefined, so fallback to generic error
-                setErrorMessage(response.message ?? "Login failed");
+                setErrorMessage(response.message ?? "Login failed.");
             }
         } catch (err) {
-            setErrorMessage("Something went wrong. Try again.");
+            setErrorMessage(`Something went wrong. ${err}`);
         }
     };
 
@@ -59,9 +51,8 @@ export default function Login() {
                         </div>
                     </div>
                     <button type="submit">Login</button>
-                    <div className={styles.signUpLink}>
-                        {/* <p>Dont have an account? <a onClick={(e) =>}="/register">Sign Up</a></p> */}
-                        <p>Don't have an account? <a href="/register">Sign Up</a></p>
+                    <div className={styles.registerLink}>
+                         <p>Dont have an account? <a onClick={() => {navigate("/register")}}>Register</a></p>
                     </div>
                 </form>
             </div>
@@ -71,15 +62,13 @@ export default function Login() {
 
 // Mock API function
 async function fakeLoginApi(username: string, password: string) {
-    return new Promise<{ success: boolean; role?: string; message?: string }>(
+    return new Promise<{ success: boolean; message?: string }>(
         (resolve) => {
-            setTimeout(() => {
-                if (username === "admin" && password === "admin123") {
-                    resolve({ success: true, role: "admin" });
-                } else {
-                    resolve({ success: false, message: "Password is incorrect" });
-                }
-            }, 1000);
+            if (username === "admin" && password === "admin123") {
+                resolve({ success: true });
+            } else {
+                resolve({ success: false, message: "Password is incorrect" });
+            }
         }
     );
 }
