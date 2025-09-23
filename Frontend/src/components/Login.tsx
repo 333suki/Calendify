@@ -60,7 +60,8 @@ export default function Login() {
                     </div>
                     <button type="submit">Login</button>
                     <div className={styles.signUpLink}>
-                        <p>Dont have an account? <a href="https://google.com">Sign Up</a></p>
+                        {/* <p>Dont have an account? <a onClick={(e) =>}="/register">Sign Up</a></p> */}
+                        <p>Don't have an account? <a href="/register">Sign Up</a></p>
                     </div>
                 </form>
             </div>

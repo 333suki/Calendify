@@ -1,0 +1,135 @@
+.mainContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url("../assets/mountain-background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+/* still has login names, will fix later preferably :P works for now*/
+.loginContainer {
+    width: 420px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(30px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: white;
+    border-radius: 10px;
+    padding: 30px 40px;
+}
+
+.loginContainer .personIcon {
+    display: flex;
+    justify-content: center;
+    margin: 0 0 8px 0;
+}
+
+.loginContainer .personIcon img {
+    width: 50px;
+    height: 50px;
+}
+
+.loginContainer h1 {
+    color: #eceff4;
+    font-size: 36px;
+    text-align: center;
+}
+
+.loginContainer .inputBox {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin: 30px 0;
+}
+
+.inputBox input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    outline: none;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    font-size: 16px;
+    color: #eceff4;
+    padding: 20px 20px 20px 20px;
+}
+
+.inputBox input::placeholder {
+    color: #eceff4;
+}
+
+.mainContainer .errorForgot {
+    display: flex;
+    margin: -15px 0 15px;
+    justify-content: space-between;
+}
+
+.errorForgot .forgot {
+    margin: 0 8px 0 0;
+}
+
+.errorForgot .error {
+    margin: 0 0 0 8px;
+}
+
+.errorForgot .error p {
+    font-size: 16px;
+    color: darkred;
+}
+
+.forgot a {
+    color: #eceff4;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.forgot a:hover {
+    text-decoration: underline;
+}
+
+.mainContainer button {
+    width: 100%;
+    height: 45px;
+    background-color: #4c566a;
+    transition: background-color 0.4s;
+    border: none;
+    outline: none;
+    border-radius: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    font-size: 16px;
+    color: #eceff4;
+    font-weight: 700;
+}
+
+.mainContainer button:hover {
+    background-color: #3b4252;
+    transition: background-color 0.4s;
+}
+
+.mainContainer button:focus {
+    background-color: #3b4252;
+    transition: background-color 0.4s;
+}
+
+.loginContainer .signUpLink {
+    font-size: 14px;
+    text-align: center;
+    margin: 20px 0 15px;
+}
+
+.signUpLink p {
+    color: #eceff4;
+}
+
+.signUpLink p a {
+    color: #eceff4;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.signUpLink p a:hover {
+    text-decoration: underline;
+}
