@@ -52,11 +52,11 @@ export default function Register() {
                     </div>
                     <h1>Register</h1>
                     <div className={styles.inputBox}>
-                        <input 
-                        type="email" placeholder="Email" value={email} onChange={(e) => {setEmail(e.target.value); setErrorMessage("")}} required/>
+                        <input type="text" placeholder="Username" value={username} onChange={(e) => {setUsername(e.target.value); setErrorMessage("")}} required/>
                     </div>
                     <div className={styles.inputBox}>
-                        <input type="text" placeholder="Username" value={username} onChange={(e) => {setUsername(e.target.value); setErrorMessage("")}} required/>
+                        <input 
+                        type="email" placeholder="Email" value={email} onChange={(e) => {setEmail(e.target.value); setErrorMessage("")}} required/>
                     </div>
                     <div className={styles.inputBox}>
                         <input type="password" placeholder="Password" value={password} onChange={(e) => {setPassword(e.target.value); setErrorMessage("")}} required/>
@@ -64,9 +64,14 @@ export default function Register() {
                     <div className={styles.inputBox}>
                         <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => {setConfirmPassword(e.target.value); setErrorMessage("")}} required/>
                     </div>
-                    <button type="submit">Sign Up</button>
+                    <div className={styles.errorBox}>
+                        <div className={styles.error}>
+                            {errorMessage && (<p className={styles.errorMessage}>{errorMessage}</p>)}
+                        </div>
+                    </div>
+                    <button type="submit">Register</button>
                     <div className={styles.signUpLink}>
-                        <p>Already have an account? <a href="/">Log In</a></p>
+                        <p>Already have an account? <a onClick={() => {navigate("/")}}>Log In</a></p>
                     </div>
                 </form>
             </div>
