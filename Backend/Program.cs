@@ -1,84 +1,92 @@
 using Backend;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
-using Backend.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<DatabaseContext>(optionsBuilder =>
-{
+builder.Services.AddDbContext<DatabaseContext>(optionsBuilder => {
     optionsBuilder.UseSqlite("Data Source = database.db");
-
 });
 
 var app = builder.Build();
 
-
-
-app.MapGet("/", (DatabaseContext db) =>
-{
-    //db.Users.Add(new Backend.Models.User("admin", "admin123"));
-    //db.SaveChanges();
+app.MapGet("/", (DatabaseContext db) => {
     return Results.Ok();
-
-
 });
 
-app.MapPost("auth/register", (Backend.Dtos.RegisterRequest? registerRequest, DatabaseContext db) =>
-{
-    //db.Users.Add(new Backend.Models.User("admin", "admin123"));
-    //db.SaveChanges();
-
-    if (registerRequest is null)
-    {
-        return Results.BadRequest();
+app.MapPost("auth/register", (Backend.Dtos.RegisterRequest? registerRequest, DatabaseContext db) => {
+    // Empty request body
+    if (registerRequest is null) {
+        return Results.BadRequest(
+            new {
+                message = "Empty request body"
+            }
+        );
     }
 
-    if (registerRequest.Username is null || registerRequest.Password is null)
-    {
-        return Results.BadRequest();
+    // Username or password not provided in request body
+    if (registerRequest.Username is null || registerRequest.Password is null) {
+        return Results.BadRequest(
+            new {
+                message = "Missing credentials"
+            }
+        );
     }
 
+    // Username already taken
     Backend.Models.User? user = db.Users.FirstOrDefault(user => user.Username == registerRequest.Username);
-
-    if (user is not null)
-    {
-        return Results.Conflict();
+    if (user is not null) {
+        return Results.Conflict(
+            new {
+                message = "Username already taken"
+            }
+        );
     }
 
-    db.Users.Add(new Backend.Models.User(registerRequest.Username, registerRequest.Password));
+    db.Users.Add(new Backend.Models.User(registerRequest.Username, Backend.HashUtils.Sha256Hash(registerRequest.Password)));
     db.SaveChanges();
     return Results.Created();
 });
 
-app.MapPost("auth/login", (Backend.Dtos.LoginRequest? loginRequest, DatabaseContext db) =>
-{
-    //db.Users.Add(new Backend.Models.User("admin", "admin123"));
-    //db.SaveChanges();
-
-    if (loginRequest is null)
-    {
-        return Results.BadRequest();
+app.MapPost("auth/login", (Backend.Dtos.LoginRequest? loginRequest, DatabaseContext db) => {
+    // Empty request body
+    if (loginRequest is null) {
+        return Results.BadRequest(
+            new {
+                message = "Empty request body"
+            }
+        );
+    }
+    
+    // Username or password not provided in request body
+    if (loginRequest.Username is null || loginRequest.Password is null) {
+        return Results.BadRequest(
+            new {
+                message = "Missing credentials"
+            }
+        );
     }
 
-
-    if (loginRequest.Username is null || loginRequest.Password is null)
-    {
-        return Results.BadRequest();
-    }
-
+    // Username not found
     Backend.Models.User? user = db.Users.FirstOrDefault(user => user.Username == loginRequest.Username);
-
-    if (user is null)
-    {
-        return Results.NotFound();
+    if (user is null) {
+        return Results.NotFound(
+            new {
+                message = "No user with that username found"
+            }
+        );
+    }
+    
+    // Wrong password
+    if (HashUtils.Sha256Hash(loginRequest.Password) != user.Password) {
+        return Results.Unauthorized();
     }
 
     return Results.Ok(
+        new {
+            accessToken = TokenGenerator.GenerateAccessToken(120, user.ID.ToString()),
+            refreshToken = TokenGenerator.GenerateRefreshToken()
+        }
     );
-
-
 });
-
 
 app.Run();
