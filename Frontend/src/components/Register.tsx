@@ -45,7 +45,7 @@ export default function Register() {
 
     return (
         <div className={styles.mainContainer}>
-            <div className={styles.loginContainer}>
+            <div className={styles.registerContainer}>
                 <form onSubmit={handleRegister}>
                     <div className={styles.personIcon}>
                         <img src={personIcon} alt="Person"></img>
