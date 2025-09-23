@@ -1,3 +1,97 @@
+.mainContainer {
+    display: flex;
+    /* justify-content: center;
+    align-items: center; */
+    min-height: 100vh;
+    background-image: url("../assets/mountain-background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+
+}
+
 .welcomeText {
     color: darkslateblue;
+}
+
+
+.dashboard {
+    width: 300px;
+    background: transparent;
+    backdrop-filter: blur(15px);
+    color: white;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+    border-radius: 30px;
+    margin: 30px;
+    margin-right: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+
+}
+
+.weeklyCalendar {
+    width: 95%;
+    background: transparent;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+    color: white;
+    border-radius: 30px;
+    margin: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+
+}
+
+
+.eventButton {
+    width: 150px;
+    height: 40px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(30px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    color: white;
+    border-radius: 20px;
+    padding: 10px 20px;
+    margin: 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+.agendaView {
+    width: 250px;
+    height: 300px;
+    background: transparent;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+    color: white;
+    border-radius: 30px;
+    margin: 30px;
+    margin-left: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+
+}           
+
+.selectionMenu {
+    width: 200px;
+    height: 200px;
+    background: transparent;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+    color: white;
+    border-radius: 30px;
+    margin: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+
+}
+
+.sideMenu {
+    width: 200px;
+    height: 200px;
+    background: transparent;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+    color: white;
+    border-radius: 30px;
+    margin: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
