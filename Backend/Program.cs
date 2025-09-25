@@ -6,11 +6,16 @@ using System.Text;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowLocalhost", policy => policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod());
+});
+
 builder.Services.AddDbContext<DatabaseContext>(optionsBuilder => {
     optionsBuilder.UseSqlite("Data Source = database.db");
 });
 
 var app = builder.Build();
+app.UseCors("AllowLocalhost");
 
 app.MapGet("/", (DatabaseContext db) => {
     return Results.Ok();
@@ -74,7 +79,7 @@ app.MapPost("auth/login", (Backend.Dtos.LoginRequest? loginRequest, DatabaseCont
     if (user is null) {
         return Results.NotFound(
             new {
-                message = "No user with that username found"
+                message = "Invalid username"
             }
         );
     }
