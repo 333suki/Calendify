@@ -8,8 +8,8 @@
     background-size: cover;
     background-position: center;
 }
-/* still has login names, will fix later preferably :P works for now*/
-.loginContainer {
+
+.registerContainer {
     width: 420px;
     background: transparent;
     border: 2px solid rgba(255, 255, 255, 0.2);
@@ -20,24 +20,24 @@
     padding: 30px 40px;
 }
 
-.loginContainer .personIcon {
+.registerContainer .personIcon {
     display: flex;
     justify-content: center;
     margin: 0 0 8px 0;
 }
 
-.loginContainer .personIcon img {
+.registerContainer .personIcon img {
     width: 50px;
     height: 50px;
 }
 
-.loginContainer h1 {
+.registerContainer h1 {
     color: #eceff4;
     font-size: 36px;
     text-align: center;
 }
 
-.loginContainer .inputBox {
+.registerContainer .inputBox {
     position: relative;
     width: 100%;
     height: 50px;
@@ -60,21 +60,17 @@
     color: #eceff4;
 }
 
-.mainContainer .errorForgot {
+.mainContainer .errorBox {
     display: flex;
-    margin: -15px 0 15px;
-    justify-content: space-between;
+    margin: -15px 0 15px 0;
+    justify-content: center;
 }
 
-.errorForgot .forgot {
-    margin: 0 8px 0 0;
-}
-
-.errorForgot .error {
+.errorBox .error {
     margin: 0 0 0 8px;
 }
 
-.errorForgot .error p {
+.errorMessage {
     font-size: 16px;
     color: darkred;
 }
@@ -114,7 +110,7 @@
     transition: background-color 0.4s;
 }
 
-.loginContainer .signUpLink {
+.registerContainer .signUpLink {
     font-size: 14px;
     text-align: center;
     margin: 20px 0 15px;
