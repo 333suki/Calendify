@@ -4,6 +4,7 @@
 *.bin
 *.props
 *.targets
+*.user
 /Backend/.vs
 .idea/
 /Frontend/.vite/
