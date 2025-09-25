@@ -15,18 +15,46 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const response = await fakeLoginApi(username, password);
-            if (response.success) {
-                // localStorage.setItem("role", response.role ?? "guest");
+            const response = await fetch("http://localhost:5117/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+
+            let data = null;
+            const text = await response.text();
+            if (text) {
+                try {
+                    data = JSON.parse(text);
+                } catch (err) {
+                    console.error("Failed to parse JSON:", err);
+                }
+            }
+
+            if (response.ok) {
+                if (data) {
+                    localStorage.setItem("accessToken", data.accessToken);
+                    localStorage.setItem("refreshToken", data.refreshToken);
+                }
                 navigate("/dashboard");
             } else {
-                setErrorMessage(response.message ?? "Login failed.");
+                if (response.status === 404 || response.status === 400) {
+                    setErrorMessage(data?.message || "Request failed");
+                } else if (response.status === 401) {
+                    setErrorMessage("Invalid password");
+                } else {
+                    setErrorMessage(`Unexpected error: ${response.status}`);
+                }
             }
         } catch (err) {
             setErrorMessage(`Something went wrong. ${err}`);
         }
     };
-
 
     return (
         <div className={styles.mainContainer}>
@@ -59,16 +87,3 @@ export default function Login() {
         </div>
     );
 };
-
-// Mock API function
-async function fakeLoginApi(username: string, password: string) {
-    return new Promise<{ success: boolean; message?: string }>(
-        (resolve) => {
-            if (username === "admin" && password === "admin123") {
-                resolve({ success: true });
-            } else {
-                resolve({ success: false, message: "Password is incorrect" });
-            }
-        }
-    );
-}
