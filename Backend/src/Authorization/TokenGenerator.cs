@@ -5,21 +5,22 @@ namespace Backend.Authorization;
 
 public static class TokenGenerator {
     private static string secret = "verysecretkey";
+
     public static string GenerateAccessToken(long expiryDuration, string subject) {
         long nowTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-        
+
         string header = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
         string payload = $"{{\"sub\":\"{subject}\",\"iat\":{nowTime},\"exp\":{nowTime + expiryDuration}}}";
-        
+
         string headerEncoded = Base64UrlEncode(Encoding.UTF8.GetBytes(header));
         string payloadEncoded = Base64UrlEncode(Encoding.UTF8.GetBytes(payload));
-        
+
         string toSign = $"{headerEncoded}.{payloadEncoded}";
         string signatureEncoded;
         using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(TokenGenerator.secret))) {
             signatureEncoded = Base64UrlEncode(hmac.ComputeHash(Encoding.UTF8.GetBytes(toSign)));
         }
-        
+
         return $"{headerEncoded}.{payloadEncoded}.{signatureEncoded}";
     }
 
@@ -32,10 +33,11 @@ public static class TokenGenerator {
         string headerEncoded = tokenSplit[0];
         string payloadEncoded = tokenSplit[1];
         string signature = tokenSplit[2];
-        
-        
+
+
         using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(TokenGenerator.secret))) {
-            if (Base64UrlEncode(hmac.ComputeHash(Encoding.UTF8.GetBytes($"{headerEncoded}.{payloadEncoded}"))) != signature) {
+            if (Base64UrlEncode(hmac.ComputeHash(Encoding.UTF8.GetBytes($"{headerEncoded}.{payloadEncoded}"))) !=
+                signature) {
                 return false;
             }
         }
@@ -49,17 +51,17 @@ public static class TokenGenerator {
         const string chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789";
         return new string(Enumerable.Range(1, length).Select(_ => chars[random.Next(chars.Length)]).ToArray());
     }
-    
+
     public static string Base64UrlEncode(byte[] input) {
         return Convert.ToBase64String(input)
             .Replace('+', '-')
             .Replace('/', '_')
             .TrimEnd('=');
     }
-    
+
     public static byte[] Base64UrlDecode(string input) {
-        string output = input.Replace('-', '+') .Replace('_', '/');
-        
+        string output = input.Replace('-', '+').Replace('_', '/');
+
         switch (output.Length % 4) {
             case 2: output += "=="; break;
             case 3: output += "="; break;

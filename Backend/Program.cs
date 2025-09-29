@@ -7,7 +7,8 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options => {
-    options.AddPolicy("AllowLocalhost", policy => policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod());
+    options.AddPolicy("AllowLocalhost",
+        policy => policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod());
 });
 
 builder.Services.AddDbContext<DatabaseContext>(optionsBuilder => {
@@ -17,9 +18,7 @@ builder.Services.AddDbContext<DatabaseContext>(optionsBuilder => {
 var app = builder.Build();
 app.UseCors("AllowLocalhost");
 
-app.MapGet("/", (DatabaseContext db) => {
-    return Results.Ok();
-});
+app.MapGet("/", (DatabaseContext db) => { return Results.Ok(); });
 
 app.MapPost("auth/register", (Backend.Dtos.RegisterRequest? registerRequest, DatabaseContext db) => {
     // Empty request body
@@ -50,7 +49,8 @@ app.MapPost("auth/register", (Backend.Dtos.RegisterRequest? registerRequest, Dat
         );
     }
 
-    db.Users.Add(new Backend.Models.User(registerRequest.Username, Backend.HashUtils.Sha256Hash(registerRequest.Password)));
+    db.Users.Add(new Backend.Models.User(registerRequest.Username,
+        Backend.HashUtils.Sha256Hash(registerRequest.Password)));
     db.SaveChanges();
     return Results.Created();
 });
@@ -64,7 +64,7 @@ app.MapPost("auth/login", (Backend.Dtos.LoginRequest? loginRequest, DatabaseCont
             }
         );
     }
-    
+
     // Username or password not provided in request body
     if (loginRequest.Username is null || loginRequest.Password is null) {
         return Results.BadRequest(
@@ -83,7 +83,7 @@ app.MapPost("auth/login", (Backend.Dtos.LoginRequest? loginRequest, DatabaseCont
             }
         );
     }
-    
+
     // Wrong password
     if (HashUtils.Sha256Hash(loginRequest.Password) != user.Password) {
         return Results.Unauthorized();
@@ -125,7 +125,7 @@ app.MapPost("auth", (DatabaseContext db, HttpRequest request) => {
             }
         );
     }
-    
+
     Console.WriteLine(headerJson);
     Console.WriteLine(payloadJson);
     Console.WriteLine(signature);
@@ -144,10 +144,10 @@ app.MapPost("auth", (DatabaseContext db, HttpRequest request) => {
             }
         );
     }
-    
+
     Console.WriteLine($"Alg: {header.Alg}");
     Console.WriteLine($"Typ: {header.Typ}");
-    
+
     // Deserialize payload JSON into payload model
     Backend.Authorization.Payload? payload = JsonSerializer.Deserialize<Payload>(payloadJson);
     if (payload is null) {
@@ -157,12 +157,12 @@ app.MapPost("auth", (DatabaseContext db, HttpRequest request) => {
             }
         );
     }
-    
+
     Console.WriteLine($"Sub: {payload.Sub}");
     Console.WriteLine($"Iat: {payload.Iat} ({DateTimeOffset.FromUnixTimeSeconds(payload.Iat)})");
     Console.WriteLine($"Exp: {payload.Exp} ({DateTimeOffset.FromUnixTimeSeconds(payload.Exp)})");
     Console.WriteLine($"Now: {DateTimeOffset.Now.ToUnixTimeSeconds()} ({DateTimeOffset.UtcNow})");
-    
+
     Console.WriteLine($"Issued valid: {DateTimeOffset.FromUnixTimeSeconds(payload.Iat) < DateTimeOffset.UtcNow}");
     Console.WriteLine($"Expired: {DateTimeOffset.FromUnixTimeSeconds(payload.Exp) < DateTimeOffset.UtcNow}");
 
@@ -175,7 +175,7 @@ app.MapPost("auth", (DatabaseContext db, HttpRequest request) => {
             }
         );
     }
-    
+
     return Results.Ok();
 });
 
