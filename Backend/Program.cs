@@ -4,6 +4,7 @@ using Backend.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options => {
@@ -18,9 +19,9 @@ builder.Services.AddDbContext<DatabaseContext>(optionsBuilder => {
 var app = builder.Build();
 app.UseCors("AllowLocalhost");
 
-app.MapGet("/", (DatabaseContext db) => { return Results.Ok(); });
+app.MapGet("/", ([FromServices] DatabaseContext db) => { return Results.Ok(); });
 
-app.MapPost("auth/register", (Backend.Dtos.RegisterRequest? registerRequest, DatabaseContext db) => {
+app.MapPost("auth/register", ([FromBody] Backend.Dtos.RegisterRequest? registerRequest, [FromServices] DatabaseContext db) => {
     // Empty request body
     if (registerRequest is null) {
         return Results.BadRequest(
@@ -55,7 +56,7 @@ app.MapPost("auth/register", (Backend.Dtos.RegisterRequest? registerRequest, Dat
     return Results.Created();
 });
 
-app.MapPost("auth/login", (Backend.Dtos.LoginRequest? loginRequest, DatabaseContext db) => {
+app.MapPost("auth/login", ([FromBody] Backend.Dtos.LoginRequest? loginRequest, [FromServices] DatabaseContext db) => {
     // Empty request body
     if (loginRequest is null) {
         return Results.BadRequest(
@@ -97,15 +98,20 @@ app.MapPost("auth/login", (Backend.Dtos.LoginRequest? loginRequest, DatabaseCont
     );
 });
 
-app.MapPost("auth", (DatabaseContext db, HttpRequest request) => {
+app.MapPost("auth/authorize", ([FromServices] DatabaseContext db, HttpRequest request) => {
+    // Console.WriteLine("Got authorize request");
     // Check if Authorization header is present
     if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
+        // Console.WriteLine("Sent 401");
         return Results.Unauthorized();
     }
+    
+    Console.WriteLine(authHeader.ToString());
 
     // Split it on '.' and check if there is 3 parts
     string[] authHeaderParts = authHeader.ToString().Split('.');
     if (authHeaderParts.Length != 3) {
+        // Console.WriteLine("Sent 400");
         return Results.BadRequest(
             new {
                 message = "Invalid Authorization header"
@@ -119,6 +125,7 @@ app.MapPost("auth", (DatabaseContext db, HttpRequest request) => {
     string signature = authHeaderParts[2];
 
     if (String.IsNullOrEmpty(headerJson) || String.IsNullOrEmpty(payloadJson) || String.IsNullOrEmpty(signature)) {
+        // Console.WriteLine("Sent 400");
         return Results.BadRequest(
             new {
                 message = "Invalid Authorization header"
@@ -132,12 +139,14 @@ app.MapPost("auth", (DatabaseContext db, HttpRequest request) => {
 
     // Verify if header and payload generate the correct hash
     if (!TokenGenerator.VerifyToken(authHeader.ToString())) {
+        // Console.WriteLine("Sent 401");
         return Results.Unauthorized();
     }
 
     // Deserialize header JSON into header model
     Backend.Authorization.Header? header = JsonSerializer.Deserialize<Header>(headerJson);
     if (header is null) {
+        // Console.WriteLine("Sent 500");
         return Results.InternalServerError(
             new {
                 message = "Header deserialization error"
@@ -151,6 +160,7 @@ app.MapPost("auth", (DatabaseContext db, HttpRequest request) => {
     // Deserialize payload JSON into payload model
     Backend.Authorization.Payload? payload = JsonSerializer.Deserialize<Payload>(payloadJson);
     if (payload is null) {
+        // Console.WriteLine("Sent 500");
         return Results.InternalServerError(
             new {
                 message = "Payload deserialization error"
@@ -168,6 +178,7 @@ app.MapPost("auth", (DatabaseContext db, HttpRequest request) => {
 
     // Check if token is expired
     if (DateTimeOffset.FromUnixTimeSeconds(payload.Exp) < DateTimeOffset.UtcNow) {
+        // Console.WriteLine("Sent 498");
         return Results.Json(
             statusCode: 498,
             data: new {
@@ -176,6 +187,7 @@ app.MapPost("auth", (DatabaseContext db, HttpRequest request) => {
         );
     }
 
+    Console.WriteLine("Sent 200");
     return Results.Ok();
 });
 
