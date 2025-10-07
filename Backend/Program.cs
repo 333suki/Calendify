@@ -7,9 +7,14 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddCors(options => {
+builder.Services.AddCors(options =>
+{
     options.AddPolicy("AllowLocalhost",
-        policy => policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod());
+        policy => policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod()); 
+        
+    options.AddPolicy("AllowLocalhost",
+        policy => policy.WithOrigins("http://localhost:5174").AllowAnyHeader().AllowAnyMethod()); 
+        
 });
 
 builder.Services.AddDbContext<DatabaseContext>(optionsBuilder => {
@@ -98,22 +103,26 @@ app.MapPost("auth/login", ([FromBody] Backend.Dtos.LoginRequest? loginRequest, [
     );
 });
 
-app.MapPost("auth/authorize", ([FromServices] DatabaseContext db, HttpRequest request) => {
+app.MapPost("auth/authorize", ([FromServices] DatabaseContext db, HttpRequest request) =>
+{
     // Console.WriteLine("Got authorize request");
     // Check if Authorization header is present
-    if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
+    if (!request.Headers.TryGetValue("Authorization", out var authHeader))
+    {
         // Console.WriteLine("Sent 401");
         return Results.Unauthorized();
     }
-    
+
     Console.WriteLine(authHeader.ToString());
 
     // Split it on '.' and check if there is 3 parts
     string[] authHeaderParts = authHeader.ToString().Split('.');
-    if (authHeaderParts.Length != 3) {
+    if (authHeaderParts.Length != 3)
+    {
         // Console.WriteLine("Sent 400");
         return Results.BadRequest(
-            new {
+            new
+            {
                 message = "Invalid Authorization header"
             }
         );
@@ -124,10 +133,12 @@ app.MapPost("auth/authorize", ([FromServices] DatabaseContext db, HttpRequest re
     string payloadJson = Encoding.UTF8.GetString(TokenGenerator.Base64UrlDecode(authHeaderParts[1]));
     string signature = authHeaderParts[2];
 
-    if (String.IsNullOrEmpty(headerJson) || String.IsNullOrEmpty(payloadJson) || String.IsNullOrEmpty(signature)) {
+    if (String.IsNullOrEmpty(headerJson) || String.IsNullOrEmpty(payloadJson) || String.IsNullOrEmpty(signature))
+    {
         // Console.WriteLine("Sent 400");
         return Results.BadRequest(
-            new {
+            new
+            {
                 message = "Invalid Authorization header"
             }
         );
@@ -138,17 +149,20 @@ app.MapPost("auth/authorize", ([FromServices] DatabaseContext db, HttpRequest re
     Console.WriteLine(signature);
 
     // Verify if header and payload generate the correct hash
-    if (!TokenGenerator.VerifyToken(authHeader.ToString())) {
+    if (!TokenGenerator.VerifyToken(authHeader.ToString()))
+    {
         // Console.WriteLine("Sent 401");
         return Results.Unauthorized();
     }
 
     // Deserialize header JSON into header model
     Backend.Authorization.Header? header = JsonSerializer.Deserialize<Header>(headerJson);
-    if (header is null) {
+    if (header is null)
+    {
         // Console.WriteLine("Sent 500");
         return Results.InternalServerError(
-            new {
+            new
+            {
                 message = "Header deserialization error"
             }
         );
@@ -159,10 +173,12 @@ app.MapPost("auth/authorize", ([FromServices] DatabaseContext db, HttpRequest re
 
     // Deserialize payload JSON into payload model
     Backend.Authorization.Payload? payload = JsonSerializer.Deserialize<Payload>(payloadJson);
-    if (payload is null) {
+    if (payload is null)
+    {
         // Console.WriteLine("Sent 500");
         return Results.InternalServerError(
-            new {
+            new
+            {
                 message = "Payload deserialization error"
             }
         );
@@ -177,11 +193,13 @@ app.MapPost("auth/authorize", ([FromServices] DatabaseContext db, HttpRequest re
     Console.WriteLine($"Expired: {DateTimeOffset.FromUnixTimeSeconds(payload.Exp) < DateTimeOffset.UtcNow}");
 
     // Check if token is expired
-    if (DateTimeOffset.FromUnixTimeSeconds(payload.Exp) < DateTimeOffset.UtcNow) {
+    if (DateTimeOffset.FromUnixTimeSeconds(payload.Exp) < DateTimeOffset.UtcNow)
+    {
         // Console.WriteLine("Sent 498");
         return Results.Json(
             statusCode: 498,
-            data: new {
+            data: new
+            {
                 message = "Token expired"
             }
         );
@@ -190,5 +208,21 @@ app.MapPost("auth/authorize", ([FromServices] DatabaseContext db, HttpRequest re
     Console.WriteLine("Sent 200");
     return Results.Ok();
 });
+
+
+app.MapPost("auth/refresh", ([FromBody] Backend.Dtos.RefreshRequest? refreshRequest, [FromServices] DatabaseContext db, HttpRequest request) =>
+{
+    if (refreshRequest is null)
+    {
+        return Results.BadRequest(
+            new
+            {
+                message = "Empty request body"
+            }
+        );
+    }
+
+}
+);
 
 app.Run();
