@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
@@ -95,10 +96,15 @@ app.MapPost("auth/login", ([FromBody] Backend.Dtos.LoginRequest? loginRequest, [
         return Results.Unauthorized();
     }
 
+    string refreshToken = TokenGenerator.GenerateRefreshToken();
+    db.RefreshTokens.Add(new Backend.Models.RefreshToken(refreshToken, user.ID));
+    db.SaveChanges();
+
     return Results.Ok(
-        new {
+        new
+        {
             accessToken = TokenGenerator.GenerateAccessToken(120, user.ID.ToString()),
-            refreshToken = TokenGenerator.GenerateRefreshToken()
+            refreshToken
         }
     );
 });
@@ -212,6 +218,34 @@ app.MapPost("auth/authorize", ([FromServices] DatabaseContext db, HttpRequest re
 
 app.MapPost("auth/refresh", ([FromBody] Backend.Dtos.RefreshRequest? refreshRequest, [FromServices] DatabaseContext db, HttpRequest request) =>
 {
+    if (!request.Headers.TryGetValue("Authorization", out var authHeader))
+    {
+        return Results.Unauthorized();
+    }
+
+    string[] authHeaderParts = authHeader.ToString().Split('.');
+    if (authHeaderParts.Length != 3)
+    {
+        return Results.BadRequest(
+            new
+            {
+                message = "Invalid Authorization header"
+            }
+        );
+    }
+
+    string payloadJSON = Encoding.UTF8.GetString(TokenGenerator.Base64UrlDecode(authHeaderParts[1]));
+    if (string.IsNullOrEmpty(payloadJSON))
+    {
+        return Results.BadRequest(
+            new
+            {
+                message = "Invalid Authorization header"
+            }
+        );
+
+    }
+
     if (refreshRequest is null)
     {
         return Results.BadRequest(
@@ -221,6 +255,52 @@ app.MapPost("auth/refresh", ([FromBody] Backend.Dtos.RefreshRequest? refreshRequ
             }
         );
     }
+
+    Backend.Authorization.Payload? payload = JsonSerializer.Deserialize<Payload>(payloadJSON);
+
+    if (payload is null)
+    {
+        return Results.InternalServerError(
+            new
+            {
+                message = "payload deserialization error"
+            }
+        );
+    }
+
+
+    string? token = db.RefreshTokens
+        .Where(t => t.UserID.ToString() == payload.Sub)
+        .Select(t => t.Token)
+        .FirstOrDefault();
+
+    if (token is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    if (token != refreshRequest.refreshToken)
+    {
+        return Results.Unauthorized();
+    }
+
+
+    string refreshToken = TokenGenerator.GenerateRefreshToken();
+    var refreshTokenEntry = db.RefreshTokens
+        .Where(t => t.UserID.ToString() == payload.Sub)
+        .FirstOrDefault();
+
+    refreshTokenEntry.Token = refreshToken;
+    db.SaveChanges();
+    
+    return Results.Ok(
+    new
+    {
+        accessToken = TokenGenerator.GenerateAccessToken(120, payload.Sub),
+        refreshToken
+    }
+);
+
 
 }
 );
