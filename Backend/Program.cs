@@ -221,7 +221,6 @@ app.MapPost("auth/refresh", ([FromBody] Backend.Dtos.RefreshRequest? refreshRequ
             }
         );
     }
-
 }
 );
 
