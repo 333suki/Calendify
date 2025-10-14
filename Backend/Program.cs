@@ -121,7 +121,7 @@ app.MapPost("auth/login", ([FromBody] Backend.Dtos.LoginRequest? loginRequest, [
     return Results.Ok(
         new
         {
-            accessToken = TokenGenerator.GenerateAccessToken(120, user.ID.ToString()),
+            accessToken = TokenGenerator.GenerateAccessToken(120, user.ID.ToString(), user.Role),
             refreshToken
         }
     );
@@ -306,7 +306,7 @@ app.MapPost("auth/refresh", ([FromBody] Backend.Dtos.RefreshRequest? refreshRequ
         return Results.Ok(
             new
             {
-                accessToken = TokenGenerator.GenerateAccessToken(120, payload.Sub),
+                accessToken = TokenGenerator.GenerateAccessToken(120, payload.Sub, (Backend.Models.Role)payload.Role),
                 refreshToken = newRefreshToken
             }
         );
