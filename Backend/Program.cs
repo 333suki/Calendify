@@ -59,7 +59,9 @@ app.MapPost("auth/register",
         }
 
         db.Users.Add(new Backend.Models.User(registerRequest.Username,
-            Backend.HashUtils.Sha256Hash(registerRequest.Password)));
+            Backend.HashUtils.Sha256Hash(registerRequest.Password),
+            Backend.Models.Role.User));
+            
         db.SaveChanges();
         return Results.Created();
     });
