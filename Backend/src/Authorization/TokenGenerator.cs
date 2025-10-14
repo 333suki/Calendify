@@ -1,16 +1,17 @@
 using System.Security.Cryptography;
 using System.Text;
+using Backend.Models;
 
 namespace Backend.Authorization;
 
 public static class TokenGenerator {
     private static string secret = "verysecretkey";
 
-    public static string GenerateAccessToken(long expiryDuration, string subject) {
+    public static string GenerateAccessToken(long expiryDuration, string subject, Role role) {
         long nowTime = DateTimeOffset.Now.ToUnixTimeSeconds();
 
         string header = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
-        string payload = $"{{\"sub\":\"{subject}\",\"iat\":{nowTime},\"exp\":{nowTime + expiryDuration}}}";
+        string payload = $"{{\"sub\":\"{subject}\",\"iat\":{nowTime},\"exp\":{nowTime + expiryDuration},\"role\":{Convert.ToInt32(role)}}}";
 
         string headerEncoded = Base64UrlEncode(Encoding.UTF8.GetBytes(header));
         string payloadEncoded = Base64UrlEncode(Encoding.UTF8.GetBytes(payload));
