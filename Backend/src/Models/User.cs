@@ -17,8 +17,8 @@ public class User
     public string Password { get; set; }
     public Role Role { get; set; }
 
+    public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 }
-
 
 public enum Role
 {
