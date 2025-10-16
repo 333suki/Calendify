@@ -4,18 +4,18 @@ namespace Backend.Models;
 
 public class Event
 {
-    public Event(string name, DateTime date, int attenddee)
+    public Event(string title, DateTime date, string description)
     {
-        this.Name = name;
-        // this.Date = date;
-        this.Attendee = attenddee;
+        this.Title = title;
+        this.Description = description;
+        this.Date = date;
     }
 
     [Key]
-    public int EventID { get; set; }
-    public string Name { get; set; }
+    public int ID { get; set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
     public DateTime Date { get; set; }
-    public int Attendee { get; set; }
 
-
+    public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 }
