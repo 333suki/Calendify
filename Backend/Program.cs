@@ -38,7 +38,7 @@ app.MapPost("auth/register",
         }
 
         // Username or password not provided in request body
-        if (registerRequest.Username is null || registerRequest.Password is null) {
+        if (registerRequest.Username is null || registerRequest.Email is null || registerRequest.Password is null) {
             return Results.BadRequest(
                 new
                 {
@@ -58,7 +58,7 @@ app.MapPost("auth/register",
             );
         }
 
-        db.Users.Add(new Backend.Models.User(registerRequest.Username,
+        db.Users.Add(new Backend.Models.User(registerRequest.Username, registerRequest.Email,
             Backend.HashUtils.Sha256Hash(registerRequest.Password),
             Backend.Models.Role.User));
             
