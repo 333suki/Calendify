@@ -20,28 +20,48 @@ export default function Register() {
             setErrorMessage("Passwords do not match.");
             return;
         }
+        
+        try {
+            const response = await fetch("http://localhost:5117/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: username,
+                    email: email,
+                    password: password
+                })
+            });
 
-        // try {
-        //     const response = await fakeLoginApi(username, password);
+            let data = null;
+            const text = await response.text();
+            if (text) {
+                try {
+                    data = JSON.parse(text);
+                } catch (err) {
+                    console.error("Failed to parse JSON:", err);
+                }
+            }
 
-        //     if (response.success) {
-        //         // role might be undefined, so fallback to "guest"
-        //         localStorage.setItem("role", response.role ?? "guest");
+            if (response.ok) {
+                navigate("/")
+            } else {
 
-        //         if (response.role === "admin") {
-        //             navigate("/dashboard");
-        //         } else {
-        //             setErrorMessage("Unauthorized user. Only admins can log in.");
-        //         }
-        //     } else {
-        //         // message might be undefined, so fallback to generic error
-        //         setErrorMessage(response.message ?? "Login failed");
-        //     }
-        // } catch (err) {
-        //     setErrorMessage("Something went wrong. Try again.");
-        // }
+                if (response.status === 404 || response.status === 400) {
+                    setErrorMessage(data?.message);
+                } else if(response.status === 409) {
+                    setErrorMessage("Username already taken")
+                }
+                else {
+                    setErrorMessage(`Unexpected error: ${response.status}`);
+                }
+            }
+
+        } catch (err) {
+            setErrorMessage(`Something went wrong. ${err}`);
+        }
     };
-
 
     return (
         <div className={styles.mainContainer}>
