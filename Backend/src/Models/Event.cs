@@ -4,7 +4,7 @@ namespace Backend.Models;
 
 public class Event
 {
-    public Event(string title, DateTime date, string description)
+    public Event(string title, string description, DateTime? date)
     {
         this.Title = title;
         this.Description = description;
@@ -15,7 +15,7 @@ public class Event
     public int ID { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
-    public DateTime Date { get; set; }
+    public DateTime? Date { get; set; }
 
     public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 }
