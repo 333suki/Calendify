@@ -128,208 +128,187 @@ app.MapPost("auth/login", ([FromBody] Backend.Dtos.LoginRequest? loginRequest, [
 });
 
 app.MapPost("auth/authorize", ([FromServices] DatabaseContext db, HttpRequest request) => {
-    // Console.WriteLine("Got authorize request");
-    // Check if Authorization header is present
     if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
-        // Console.WriteLine("Sent 401");
         return Results.Unauthorized();
     }
 
-    // Console.WriteLine(authHeader.ToString());
-
-    // Split it on '.' and check if there is 3 parts
-    string[] authHeaderParts = authHeader.ToString().Split('.');
-    if (authHeaderParts.Length != 3) {
-        // Console.WriteLine("Sent 400");
-        return Results.BadRequest(
-            new
-            {
-                message = "Invalid Authorization header"
-            }
-        );
+    if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
+        switch (result) {
+            case AuthUtils.TokenParseResult.InvalidFormat:
+                return Results.BadRequest(
+                    new
+                    {
+                        message = "Invalid Authorization header"
+                    }
+                );
+            case AuthUtils.TokenParseResult.Invalid:
+                return Results.Unauthorized();
+            case AuthUtils.TokenParseResult.TokenExpired:
+                return Results.Json(
+                    statusCode: 498,
+                    data: new
+                    {
+                        message = "Token expired"
+                    }
+                );
+            case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
+            case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
+            case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
+                return Results.BadRequest(
+                    new
+                    {
+                        message = "Invalid Authorization header"
+                    }
+                );
+            case AuthUtils.TokenParseResult.HeaderDeserializeError:
+                return Results.InternalServerError(
+                    new
+                    {
+                        message = "Header deserialization error"
+                    }
+                );
+            case AuthUtils.TokenParseResult.PayloadDeserializeError:
+                return Results.InternalServerError(
+                    new
+                    {
+                        message = "Payload deserialization error"
+                    }
+                );
+        }
     }
-
-    // Decode the header (first part) and payload (second part)
-    string headerJson = Encoding.UTF8.GetString(TokenGenerator.Base64UrlDecode(authHeaderParts[0]));
-    string payloadJson = Encoding.UTF8.GetString(TokenGenerator.Base64UrlDecode(authHeaderParts[1]));
-    string signature = authHeaderParts[2];
-
-    if (String.IsNullOrEmpty(headerJson) || String.IsNullOrEmpty(payloadJson) || String.IsNullOrEmpty(signature)) {
-        // Console.WriteLine("Sent 400");
-        return Results.BadRequest(
-            new
-            {
-                message = "Invalid Authorization header"
-            }
-        );
-    }
-
-    // Console.WriteLine(headerJson);
-    // Console.WriteLine(payloadJson);
-    // Console.WriteLine(signature);
-
-    // Verify if header and payload generate the correct hash
-    if (!TokenGenerator.VerifyToken(authHeader.ToString())) {
-        // Console.WriteLine("Sent 401");
-        return Results.Unauthorized();
-    }
-
-    // Deserialize header JSON into header model
-    Backend.Authorization.Header? header = JsonSerializer.Deserialize<Header>(headerJson);
-    if (header is null) {
-        // Console.WriteLine("Sent 500");
-        return Results.InternalServerError(
-            new
-            {
-                message = "Header deserialization error"
-            }
-        );
-    }
-
-    // Console.WriteLine($"Alg: {header.Alg}");
-    // Console.WriteLine($"Typ: {header.Typ}");
-
-    // Deserialize payload JSON into payload model
-    Backend.Authorization.Payload? payload = JsonSerializer.Deserialize<Payload>(payloadJson);
-    if (payload is null) {
-        // Console.WriteLine("Sent 500");
-        return Results.InternalServerError(
-            new
-            {
-                message = "Payload deserialization error"
-            }
-        );
-    }
-
-    // Console.WriteLine($"Sub: {payload.Sub}");
-    // Console.WriteLine($"Iat: {payload.Iat} ({DateTimeOffset.FromUnixTimeSeconds(payload.Iat)})");
-    // Console.WriteLine($"Exp: {payload.Exp} ({DateTimeOffset.FromUnixTimeSeconds(payload.Exp)})");
-    // Console.WriteLine($"Now: {DateTimeOffset.Now.ToUnixTimeSeconds()} ({DateTimeOffset.UtcNow})");
-    //
-    // Console.WriteLine($"Issued valid: {DateTimeOffset.FromUnixTimeSeconds(payload.Iat) < DateTimeOffset.UtcNow}");
-    // Console.WriteLine($"Expired: {DateTimeOffset.FromUnixTimeSeconds(payload.Exp) < DateTimeOffset.UtcNow}");
-
-    // Check if token is expired
-    if (DateTimeOffset.FromUnixTimeSeconds(payload.Exp) < DateTimeOffset.UtcNow) {
-        // Console.WriteLine("Sent 498");
-        return Results.Json(
-            statusCode: 498,
-            data: new
-            {
-                message = "Token expired"
-            }
-        );
-    }
-
-    // Console.WriteLine("Sent 200");
+    
     return Results.Ok();
 });
 
 
 app.MapPost("auth/refresh", ([FromBody] Backend.Dtos.RefreshRequest? refreshRequest, [FromServices] DatabaseContext db, HttpRequest request) => {
-        Console.WriteLine("Got refresh request");
-        if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
-            return Results.Unauthorized();
-        }
-
-        string[] authHeaderParts = authHeader.ToString().Split('.');
-        if (authHeaderParts.Length != 3) {
-            return Results.BadRequest(
-                new
-                {
-                    message = "Invalid Authorization header"
-                }
-            );
-        }
-        
-        if (refreshRequest is null) {
-            return Results.BadRequest(
-                new
-                {
-                    message = "Empty request body"
-                }
-            );
-        }
-
-        string payloadJSON = Encoding.UTF8.GetString(TokenGenerator.Base64UrlDecode(authHeaderParts[1]));
-        if (string.IsNullOrEmpty(payloadJSON)) {
-            return Results.BadRequest(
-                new
-                {
-                    message = "Invalid Authorization header"
-                }
-            );
-        }
-        
-        // Verify if header and payload generate the correct hash
-        if (!TokenGenerator.VerifyToken(authHeader.ToString())) {
-            return Results.Unauthorized();
-        }
-
-        Backend.Authorization.Payload? payload = JsonSerializer.Deserialize<Payload>(payloadJSON);
-        if (payload is null) {
-            return Results.InternalServerError(
-                new
-                {
-                    message = "Payload deserialization error"
-                }
-            );
-        }
-
-        string? token = db.RefreshTokens
-            .Where(t => t.UserID.ToString() == payload.Sub)
-            .Select(t => t.Token)
-            .FirstOrDefault();
-
-        if (token is null) {
-            return Results.Unauthorized();
-        }
-
-        if (token != refreshRequest.refreshToken) {
-            return Results.Unauthorized();
-        }
-        
-        string newRefreshToken = TokenGenerator.GenerateRefreshToken();
-        Backend.Models.RefreshToken? refreshTokenEntry = db.RefreshTokens
-            .FirstOrDefault(t => t.UserID.ToString() == payload.Sub);
-        if (refreshTokenEntry is null) {
-            return Results.NotFound(
-                new
-                {
-                    message = $"Refresh token for user with id {payload.Sub} not found"
-                }
-            );
-        }
-        refreshTokenEntry.Token = newRefreshToken;
-        db.SaveChanges();
-
-        return Results.Ok(
-            new
-            {
-                accessToken = TokenGenerator.GenerateAccessToken(120, payload.Sub, (Backend.Models.Role)payload.Role),
-                refreshToken = newRefreshToken
-            }
-        );
-    }
-);
-
-
-app.MapPost("/event", ([FromBody] Backend.Dtos.NewEventRequest? newEventRequest, [FromServices] DatabaseContext db, HttpRequest request) =>
-{
-    if (!request.Headers.TryGetValue("Authorization", out var authHeader))
-    {
+    if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
         return Results.Unauthorized();
     }
-
-    string[] authHeaderParts = authHeader.ToString().Split('.');
-    if (authHeaderParts.Length != 3)
-    {
+    
+    if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
+        switch (result) {
+            case AuthUtils.TokenParseResult.InvalidFormat:
+                return Results.BadRequest(
+                    new
+                    {
+                        message = "Invalid Authorization header"
+                    }
+                );
+            case AuthUtils.TokenParseResult.Invalid:
+                return Results.Unauthorized();
+            case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
+            case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
+            case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
+                return Results.BadRequest(
+                    new
+                    {
+                        message = "Invalid Authorization header"
+                    }
+                );
+            case AuthUtils.TokenParseResult.HeaderDeserializeError:
+                return Results.InternalServerError(
+                    new
+                    {
+                        message = "Header deserialization error"
+                    }
+                );
+            case AuthUtils.TokenParseResult.PayloadDeserializeError:
+                return Results.InternalServerError(
+                    new
+                    {
+                        message = "Payload deserialization error"
+                    }
+                );
+        }
+    }
+    
+    if (refreshRequest is null) {
         return Results.BadRequest(
             new
             {
-                message = "Invalid Authorization header"
+                message = "Empty request body"
             }
         );
+    }
+
+    string? token = db.RefreshTokens
+        .Where(t => t.UserID.ToString() == payload!.Sub)
+        .Select(t => t.Token)
+        .FirstOrDefault();
+
+    if (token is null) {
+        return Results.Unauthorized();
+    }
+
+    if (token != refreshRequest.refreshToken) {
+        return Results.Unauthorized();
+    }
+    
+    string newRefreshToken = TokenGenerator.GenerateRefreshToken();
+    Backend.Models.RefreshToken? refreshTokenEntry = db.RefreshTokens
+        .FirstOrDefault(t => t.UserID.ToString() == payload!.Sub);
+    if (refreshTokenEntry is null) {
+        return Results.NotFound(
+            new
+            {
+                message = $"Refresh token for user with id {payload!.Sub} not found"
+            }
+        );
+    }
+    refreshTokenEntry.Token = newRefreshToken;
+    db.SaveChanges();
+
+    return Results.Ok(
+        new
+        {
+            accessToken = TokenGenerator.GenerateAccessToken(120, payload!.Sub, (Backend.Models.Role)payload.Role),
+            refreshToken = newRefreshToken
+        }
+    );
+});
+
+
+app.MapPost("/event", ([FromBody] Backend.Dtos.NewEventRequest? newEventRequest, [FromServices] DatabaseContext db, HttpRequest request) => {
+    if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
+        return Results.Unauthorized();
+    }
+    
+    if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
+        switch (result) {
+            case AuthUtils.TokenParseResult.InvalidFormat:
+                return Results.BadRequest(
+                    new
+                    {
+                        message = "Invalid Authorization header"
+                    }
+                );
+            case AuthUtils.TokenParseResult.Invalid:
+                return Results.Unauthorized();
+            case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
+            case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
+            case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
+                return Results.BadRequest(
+                    new
+                    {
+                        message = "Invalid Authorization header"
+                    }
+                );
+            case AuthUtils.TokenParseResult.HeaderDeserializeError:
+                return Results.InternalServerError(
+                    new
+                    {
+                        message = "Header deserialization error"
+                    }
+                );
+            case AuthUtils.TokenParseResult.PayloadDeserializeError:
+                return Results.InternalServerError(
+                    new
+                    {
+                        message = "Payload deserialization error"
+                    }
+                );
+        }
     }
 
     if (newEventRequest is null)
@@ -353,54 +332,10 @@ app.MapPost("/event", ([FromBody] Backend.Dtos.NewEventRequest? newEventRequest,
         );
     }
 
-    string payloadJSON = Encoding.UTF8.GetString(TokenGenerator.Base64UrlDecode(authHeaderParts[1]));
-    if (string.IsNullOrEmpty(payloadJSON))
-    {
-        return Results.BadRequest(
-            new
-            {
-                message = "Invalid Authorization header"
-            }
-        );
-    }
-
-    // Verify if header and payload generate the correct hash
-    if (!TokenGenerator.VerifyToken(authHeader.ToString()))
-    {
-        return Results.Unauthorized();
-    }
-
-    Backend.Authorization.Payload? payload = JsonSerializer.Deserialize<Payload>(payloadJSON);
-    if (payload is null)
-    {
-        return Results.InternalServerError(
-            new
-            {
-                message = "Payload deserialization error"
-            }
-        );
-    }
-
-    // Check if token is expired
-    if (DateTimeOffset.FromUnixTimeSeconds(payload.Exp) < DateTimeOffset.UtcNow)
-    {
-        // Console.WriteLine("Sent 498");
-        return Results.Json(
-            statusCode: 498,
-            data: new
-            {
-                message = "Token expired"
-            }
-        );
-    }
-
     db.Events.Add(new Backend.Models.Event(newEventRequest.Title, newEventRequest.Description, newEventRequest.Date));
-    
     db.SaveChanges();
 
     return Results.Ok();
 });
-            
-        
 
 app.Run();
