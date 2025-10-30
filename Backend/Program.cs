@@ -313,4 +313,94 @@ app.MapPost("auth/refresh", ([FromBody] Backend.Dtos.RefreshRequest? refreshRequ
     }
 );
 
+
+app.MapPost("/event", ([FromBody] Backend.Dtos.NewEventRequest? newEventRequest, [FromServices] DatabaseContext db, HttpRequest request) =>
+{
+    if (!request.Headers.TryGetValue("Authorization", out var authHeader))
+    {
+        return Results.Unauthorized();
+    }
+
+    string[] authHeaderParts = authHeader.ToString().Split('.');
+    if (authHeaderParts.Length != 3)
+    {
+        return Results.BadRequest(
+            new
+            {
+                message = "Invalid Authorization header"
+            }
+        );
+    }
+
+    if (newEventRequest is null)
+    {
+        return Results.BadRequest(
+            new
+            {
+                message = "Empty request body"
+            }
+        );
+    }
+
+    // fields not provided in request body
+    if (newEventRequest.Title is null || newEventRequest.Description is null || newEventRequest.Date is null)
+    {
+        return Results.BadRequest(
+            new
+            {
+                message = "Missing event fields"
+            }
+        );
+    }
+
+    string payloadJSON = Encoding.UTF8.GetString(TokenGenerator.Base64UrlDecode(authHeaderParts[1]));
+    if (string.IsNullOrEmpty(payloadJSON))
+    {
+        return Results.BadRequest(
+            new
+            {
+                message = "Invalid Authorization header"
+            }
+        );
+    }
+
+    // Verify if header and payload generate the correct hash
+    if (!TokenGenerator.VerifyToken(authHeader.ToString()))
+    {
+        return Results.Unauthorized();
+    }
+
+    Backend.Authorization.Payload? payload = JsonSerializer.Deserialize<Payload>(payloadJSON);
+    if (payload is null)
+    {
+        return Results.InternalServerError(
+            new
+            {
+                message = "Payload deserialization error"
+            }
+        );
+    }
+
+    // Check if token is expired
+    if (DateTimeOffset.FromUnixTimeSeconds(payload.Exp) < DateTimeOffset.UtcNow)
+    {
+        // Console.WriteLine("Sent 498");
+        return Results.Json(
+            statusCode: 498,
+            data: new
+            {
+                message = "Token expired"
+            }
+        );
+    }
+
+    db.Events.Add(new Backend.Models.Event(newEventRequest.Title, newEventRequest.Description, newEventRequest.Date));
+    
+    db.SaveChanges();
+
+    return Results.Ok();
+});
+            
+        
+
 app.Run();
