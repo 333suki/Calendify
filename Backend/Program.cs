@@ -23,8 +23,6 @@ builder.Services.AddDbContext<DatabaseContext>(optionsBuilder => {
 var app = builder.Build();
 app.UseCors("AllowLocalhost");
 
-app.MapGet("/", ([FromServices] DatabaseContext db) => { return Results.Ok(); });
-
 app.MapPost("auth/register",
     ([FromBody] Backend.Dtos.RegisterRequest? registerRequest, [FromServices] DatabaseContext db) => {
         // Empty request body
@@ -285,6 +283,14 @@ app.MapPost("/event", ([FromBody] Backend.Dtos.NewEventRequest? newEventRequest,
                 );
             case AuthUtils.TokenParseResult.Invalid:
                 return Results.Unauthorized();
+            case AuthUtils.TokenParseResult.TokenExpired:
+                return Results.Json(
+                    statusCode: 498,
+                    data: new
+                    {
+                        message = "Token expired"
+                    }
+                );
             case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
             case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
             case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
@@ -321,7 +327,6 @@ app.MapPost("/event", ([FromBody] Backend.Dtos.NewEventRequest? newEventRequest,
         );
     }
 
-    // fields not provided in request body
     if (newEventRequest.Title is null || newEventRequest.Description is null || newEventRequest.Date is null)
     {
         return Results.BadRequest(
