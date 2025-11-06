@@ -64,7 +64,7 @@ export default function Agenda({
     const timeSlots = getTimeSlots();
 
     return (
-        <div className={styles.agenda}>
+        <div className={styles.weeklyCalendar}>
             <h2>Week of {selectedDate.toLocaleDateString()}</h2>
             <div className={styles.weekView}>
                 <div className={styles.timeSlot}></div>

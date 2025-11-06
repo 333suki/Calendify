@@ -1,4 +1,4 @@
-.navigation {
+.sideMenu {
     background: transparent;
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(30px);
@@ -12,7 +12,7 @@
     gap: 15px;
 }
 
-.navigation h2 {
+.sideMenu h2 {
     color: #eceff4;
     font-size: 22px;
     margin: 0 0 20px 0;
@@ -60,7 +60,7 @@
 }
 
 @media (max-width: 1200px) {
-    .navigation {
+    .sideMenu {
         width: 100%;
         max-width: none;
     }
