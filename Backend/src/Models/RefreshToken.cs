@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Models;
 
@@ -11,10 +12,11 @@ public class RefreshToken
     }
 
     [Key]
+    [Column(Order = 0)]
     public int ID { get; set; }
+    [Column(Order = 1)]
     public int UserID { get; set; }
-    public string Token { get; set; }
-
-    // nav property
     public User User { get; set; }
+    [Column(Order = 2)]
+    public string Token { get; set; }
 }
