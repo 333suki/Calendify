@@ -14,7 +14,7 @@ public class User
     }
 
     [Key]
-    [Column(Order=0)]
+    [Column(Order = 0)]
     public int ID { get; set; }
     [Column(Order = 1)]
     public string Username { get; set; }
@@ -25,7 +25,9 @@ public class User
     [Column(Order=4)]
     public Role Role { get; set; }
 
-    public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
+    public ICollection<EventAttendance> EventAttendances { get; set; } = new List<EventAttendance>();
+    public ICollection<OfficeAttendance> OfficeAttendances { get; set; } = new List<OfficeAttendance>();
+    public ICollection<RoomBooking> RoomBookings { get; set; } = new List<RoomBooking>();
 }
 
 public enum Role

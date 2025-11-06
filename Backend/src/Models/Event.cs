@@ -13,14 +13,14 @@ public class Event
     }
 
     [Key]
-    [Column(Order=0)]
+    [Column(Order = 0)]
     public int ID { get; set; }
-    [Column(Order=1)]
+    [Column(Order = 1)]
     public string Title { get; set; }
-    [Column(Order=2)]
+    [Column(Order = 2)]
     public string Description { get; set; }
-    [Column(Order=3)]
+    [Column(Order = 3)]
     public DateTime? Date { get; set; }
 
-    public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
+    public ICollection<EventAttendance> EventAttendances { get; set; } = new List<EventAttendance>();
 }
