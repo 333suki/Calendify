@@ -7,7 +7,7 @@ interface NavigationProps {
 
 export default function Navigation({ onLogout }: NavigationProps) {
     return (
-        <div className={styles.navigation}>
+        <div className={styles.sideMenu}>
             <h2>Menu</h2>
             <div className={`${styles.menuItem} ${styles.profile}`} onClick={() => alert('Profile clicked')}>
                 Profile

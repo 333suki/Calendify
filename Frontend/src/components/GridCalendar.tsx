@@ -29,7 +29,6 @@ export default function GridCalendar({
         
         const days = [];
         
-        // Previous month days
         const prevMonth = new Date(date.getFullYear(), date.getMonth() - 1, 0);
         for (let i = daysFromPrevMonth - 1; i >= 0; i--) {
             days.push({
@@ -38,7 +37,6 @@ export default function GridCalendar({
             });
         }
         
-        // Current month days
         for (let day = 1; day <= daysInCurrentMonth; day++) {
             days.push({
                 date: new Date(date.getFullYear(), date.getMonth(), day),
@@ -46,7 +44,6 @@ export default function GridCalendar({
             });
         }
         
-        // Next month days
         const remainingCells = totalCells - days.length;
         for (let day = 1; day <= remainingCells; day++) {
             days.push({
@@ -63,7 +60,7 @@ export default function GridCalendar({
     };
 
     return (
-        <div className={styles.gridCalendar}>
+        <div className={styles.agendaView}>
             <div className={styles.monthNavigation}>
                 <button onClick={() => onNavigateMonth('prev')}>← Prev</button>
                 <h3>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h3>
