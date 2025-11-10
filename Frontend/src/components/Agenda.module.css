@@ -1,4 +1,4 @@
-.agenda {
+.weeklyCalendar {
     background: transparent;
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(30px);
@@ -11,7 +11,7 @@
     margin-top: 150px;
 }
 
-.agenda h2 {
+.weeklyCalendar h2 {
     color: #eceff4;
     font-size: 24px;
     margin: 0 0 25px 0;

@@ -2,7 +2,7 @@
     grid-column: 1 / 2; 
     grid-row: 1 / 2;    
     justify-self: start; 
-    align-self: start;  
+    align-self: start;
     background: transparent;
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(30px);

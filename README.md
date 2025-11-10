@@ -14,6 +14,20 @@ The project is split into two components: `Backend` and `Frontend`.
 `Backend` is an API made with ASP .NET Core, using a SQLite database managed by .NET EntityFramework Core.
 
 It features authorization endpoints which utilize JWT tokens and cycling refresh tokens to securely authorize users wanting to access protected information.
+
+# Development instructions
+## Creating a new migration
+In the `Backend` directory, run the following command
+```bash
+dotnet ef migrations add "MigrationName"
+```
+This needs to be done everytime a model structure is edited, a model is added or deleted, etc. Whenever the database structure needs changing.
+## Updating the database to the latest migration
+In the `Backend` directory, run the following command
+```bash
+dotnet ef database update
+```
+
 # Run instructions
 First, clone the repository and change into the cloned directory.
 ```bash
