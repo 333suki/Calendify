@@ -1,34 +1,24 @@
 .navigation {
-    background: rgba(20, 20, 30, 0.8); 
-    backdrop-filter: blur(20px);
     display: flex;
-    justify-content: center; 
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(30px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    justify-content: center;
     align-items: center;
     gap: 20px;
-    height: 45px;     
-    padding: 10px 30px;
-    border-radius: 0 0 15px 15px; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .menuItem {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 15px;
+    padding: 12px 12px;
+    margin: 1rem;
     color: #eceff4;
-    text-decoration: none;
     border-radius: 10px;
-    transition: all 0.3s ease;
+    transition: background 0.3s ease;
     font-size: 16px;
 }
 
 .menuItem:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px); 
-}
-
-.menuItem::before {
-    width: 18px;
-    height: 18px;
+    background: rgba(236, 239, 244, 0.1);
 }

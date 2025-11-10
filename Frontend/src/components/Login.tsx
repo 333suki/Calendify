@@ -41,7 +41,7 @@ export default function Login() {
                     localStorage.setItem("accessToken", data.accessToken);
                     localStorage.setItem("refreshToken", data.refreshToken);
                 }
-                navigate("/dashboard");
+                navigate("/home");
             } else {
                 if (response.status === 404 || response.status === 400) {
                     setErrorMessage(data?.message || "Request failed");

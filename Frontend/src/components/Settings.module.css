@@ -4,8 +4,16 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
+    display: grid;
+    grid-template-rows: 1fr 7fr;
     padding: 20px;
+}
+
+.navigationContainer {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+}
+
+.content {
+
 }

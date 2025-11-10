@@ -60,7 +60,7 @@ export default function GridCalendar({
     };
 
     return (
-        <div className={styles.agendaView}>
+        <div className={styles.gridCalendar}>
             <div className={styles.monthNavigation}>
                 <button onClick={() => onNavigateMonth('prev')}>← Prev</button>
                 <h3>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h3>

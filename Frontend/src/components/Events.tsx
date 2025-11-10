@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Events.module.css";
 import SelectionMenu from "./SelectionMenu";
@@ -13,14 +13,6 @@ interface Event {
 }
 
 export default function Events() {
-    
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        navigate("/");
-    };
-
-
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showBirthdays, setShowBirthdays] = useState(true);
@@ -77,31 +69,31 @@ export default function Events() {
 
     return (
         <div className={styles.mainContainer}>
-            <Navigation onLogout={handleLogout} />
-
-
-            <div className={styles.HomeContainer}>
+            <div className ={styles.navigationContainer}>
+                <Navigation/>
+            </div>
+            <div className={styles.content}>
                 <button className={styles.eventButton} onClick={handleEventAdd}>
                     Add Event
                 </button>
-            </div>
 
-            <div className={styles.eventsList}>
-                {events.map(event => (
-                    <div key={event.id} className={styles.eventItem}>
-                        <strong>{event.title}</strong> - {event.date.toDateString()} {event.time} ({event.type})
-                    </div>
-                ))}
-            </div>
+                <div className={styles.eventsList}>
+                    {events.map(event => (
+                        <div key={event.id} className={styles.eventItem}>
+                            <strong>{event.title}</strong> - {event.date.toDateString()} {event.time} ({event.type})
+                        </div>
+                    ))}
+                </div>
 
-            <SelectionMenu
-            showEvents={showEvents}
-            showBirthdays={showBirthdays}
-            showAppointments={showAppointments}
-            onToggleEvents={(checked) => setShowEvents(checked)}
-            onToggleBirthdays={(checked) => setShowBirthdays(checked)}
-            onToggleAppointments={(checked) => setShowAppointments(checked)}
-            />
+                <SelectionMenu
+                    showEvents={showEvents}
+                    showBirthdays={showBirthdays}
+                    showAppointments={showAppointments}
+                    onToggleEvents={(checked) => setShowEvents(checked)}
+                    onToggleBirthdays={(checked) => setShowBirthdays(checked)}
+                    onToggleAppointments={(checked) => setShowAppointments(checked)}
+                />
+            </div>
         </div>
     );
 }

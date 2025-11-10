@@ -1,19 +1,19 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Navigation.module.css";
 
-interface NavigationProps {
-    onLogout: () => void;
-}
-
-export default function Navigation({ onLogout }: NavigationProps) {
+export default function Navigation() {
     const navigate = useNavigate();
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        navigate("/");
+    };
 
     return (
         <nav className={styles.navigation}>
             <div
                 className={`${styles.menuItem} ${styles.home}`}
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/home")}
             >
                 Home
             </div>
@@ -64,7 +64,7 @@ export default function Navigation({ onLogout }: NavigationProps) {
 
             <div
                 className={`${styles.menuItem} ${styles.logout}`}
-                onClick={onLogout}
+                onClick={handleLogout}
             >
                 Logout
             </div>

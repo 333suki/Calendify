@@ -1,10 +1,8 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import styles from "./Dashboard.module.css";
+import { useState } from "react";
+import styles from "./Home.module.css";
 import GridCalendar from "./GridCalendar";
 import Agenda from "./Agenda";
 import Navigation from "./Navigation";
-import SelectionMenu from "./SelectionMenu";
 
 interface Event {
     id: string;
@@ -14,7 +12,7 @@ interface Event {
     type: 'event' | 'birthday' | 'appointment';
 }
 
-export default function Dashboard() {
+export default function Home() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showBirthdays, setShowBirthdays] = useState(true);
@@ -44,8 +42,6 @@ export default function Dashboard() {
         }
     ]);
 
-    const navigate = useNavigate();
-
     const navigateMonth = (direction: 'prev' | 'next') => {
         setCurrentDate(prev => {
             const newDate = new Date(prev);
@@ -62,42 +58,38 @@ export default function Dashboard() {
         setSelectedDate(date);
     };
 
-    const handleEventAdd = () => {
-        const newEvent: Event = {
-            id: Date.now().toString(),
-            title: 'New Event',
-            date: selectedDate,
-            time: '10:00',
-            type: 'event'
-        };
-        setEvents(prev => [...prev, newEvent]);
-        alert('Event added successfully!');
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem("role");
-        navigate("/");
-    };
+    // const handleEventAdd = () => {
+    //     const newEvent: Event = {
+    //         id: Date.now().toString(),
+    //         title: 'New Event',
+    //         date: selectedDate,
+    //         time: '10:00',
+    //         type: 'event'
+    //     };
+    //     setEvents(prev => [...prev, newEvent]);
+    //     alert('Event added successfully!');
+    // };
 
     return (
         <div className={styles.mainContainer}>
-            <div className={styles.dashboard}>
-                <Navigation onLogout={handleLogout} />
+            <div className ={styles.navigationContainer}>
+                <Navigation/>
+            </div>
+            <div className={styles.content}>
                 <GridCalendar
                     currentDate={currentDate}
                     selectedDate={selectedDate}
                     onDateSelect={handleDateSelect}
                     onNavigateMonth={navigateMonth}
                 />
+                <Agenda
+                    selectedDate={selectedDate}
+                    events={events}
+                    showBirthdays={showBirthdays}
+                    showEvents={showEvents}
+                    showAppointments={showAppointments}
+                />
             </div>
-            
-            <Agenda
-                selectedDate={selectedDate}
-                events={events}
-                showBirthdays={showBirthdays}
-                showEvents={showEvents}
-                showAppointments={showAppointments}
-            />
         </div>
     );
 }

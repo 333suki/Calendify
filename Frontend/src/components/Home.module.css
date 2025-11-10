@@ -4,9 +4,21 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
+    display: grid;
+    grid-template-rows: 1fr 7fr;
     padding: 20px;
+}
+
+.navigationContainer {
+    /*border: 1px solid red;*/
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+}
+
+.content {
+    /*border: 1px solid orange;*/
+    display: grid;
+    grid-template-columns: 1fr 3fr;
 }
 
 .dashboard {
@@ -16,47 +28,6 @@
     grid-template-rows: auto 1fr;
     gap: 20px;
     max-width: 800px;
-}
-
-.eventButton {
-    grid-column: 1 / 2;
-    grid-row: 0.5 / 2;
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(30px);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    border-radius: 15px;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-height: 80px;
-    position: relative;
-}
-
-.eventButton:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.eventButton::before {
-    content: "+";
-    font-size: 48px;
-    color: #eceff4;
-    font-weight: bold;
-    line-height: 1;
-}
-
-.eventButton::after {
-    content: "Add Event";
-    position: absolute;
-    bottom: 15px;
-    font-size: 14px;
-    color: #eceff4;
-    font-weight: 600;
 }
 
 .selectionMenu {
