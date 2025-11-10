@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./Dashboard.module.css";
-import GridCalendar from "./GridCalendar";
-import Agenda from "./Agenda";
-import Navigation from "./Navigation";
+import styles from "./Events.module.css";
 import SelectionMenu from "./SelectionMenu";
+import Navigation from "./Navigation";
 
 interface Event {
     id: string;
@@ -14,7 +12,15 @@ interface Event {
     type: 'event' | 'birthday' | 'appointment';
 }
 
-export default function Dashboard() {
+export default function Events() {
+    
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        navigate("/");
+    };
+
+
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showBirthdays, setShowBirthdays] = useState(true);
@@ -44,24 +50,6 @@ export default function Dashboard() {
         }
     ]);
 
-    const navigate = useNavigate();
-
-    const navigateMonth = (direction: 'prev' | 'next') => {
-        setCurrentDate(prev => {
-            const newDate = new Date(prev);
-            if (direction === 'prev') {
-                newDate.setMonth(prev.getMonth() - 1);
-            } else {
-                newDate.setMonth(prev.getMonth() + 1);
-            }
-            return newDate;
-        });
-    };
-
-    const handleDateSelect = (date: Date) => {
-        setSelectedDate(date);
-    };
-
     const handleEventAdd = () => {
         const newEvent: Event = {
             id: Date.now().toString(),
@@ -74,29 +62,45 @@ export default function Dashboard() {
         alert('Event added successfully!');
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem("role");
-        navigate("/");
+    const handleDateSelect = (date: Date) => {
+        setSelectedDate(date);
+    };
+
+    const navigateMonth = (direction: 'prev' | 'next') => {
+        setCurrentDate(prev => {
+            const newDate = new Date(prev);
+            if (direction === 'prev') newDate.setMonth(prev.getMonth() - 1);
+            else newDate.setMonth(prev.getMonth() + 1);
+            return newDate;
+        });
     };
 
     return (
         <div className={styles.mainContainer}>
-            <div className={styles.dashboard}>
-                <Navigation onLogout={handleLogout} />
-                <GridCalendar
-                    currentDate={currentDate}
-                    selectedDate={selectedDate}
-                    onDateSelect={handleDateSelect}
-                    onNavigateMonth={navigateMonth}
-                />
+            <Navigation onLogout={handleLogout} />
+
+
+            <div className={styles.HomeContainer}>
+                <button className={styles.eventButton} onClick={handleEventAdd}>
+                    Add Event
+                </button>
             </div>
-            
-            <Agenda
-                selectedDate={selectedDate}
-                events={events}
-                showBirthdays={showBirthdays}
-                showEvents={showEvents}
-                showAppointments={showAppointments}
+
+            <div className={styles.eventsList}>
+                {events.map(event => (
+                    <div key={event.id} className={styles.eventItem}>
+                        <strong>{event.title}</strong> - {event.date.toDateString()} {event.time} ({event.type})
+                    </div>
+                ))}
+            </div>
+
+            <SelectionMenu
+            showEvents={showEvents}
+            showBirthdays={showBirthdays}
+            showAppointments={showAppointments}
+            onToggleEvents={(checked) => setShowEvents(checked)}
+            onToggleBirthdays={(checked) => setShowBirthdays(checked)}
+            onToggleAppointments={(checked) => setShowAppointments(checked)}
             />
         </div>
     );
