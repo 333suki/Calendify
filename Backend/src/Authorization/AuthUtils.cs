@@ -120,8 +120,8 @@ public class AuthUtils {
         // Check if token is expired
         if (DateTimeOffset.FromUnixTimeSeconds(deserializedPayload.Exp) < DateTimeOffset.UtcNow) {
             result = TokenParseResult.TokenExpired;
-            header = null;
-            payload = null;
+            header = deserializedHeader;
+            payload = deserializedPayload;
             return false;
         }
 

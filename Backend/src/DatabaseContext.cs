@@ -5,7 +5,7 @@ namespace Backend;
 
 public class DatabaseContext : DbContext
 {
-    public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
+    public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) {}
 
     public DbSet<Models.User> Users { get; set; }
     public DbSet<Models.RefreshToken> RefreshTokens { get; set; }

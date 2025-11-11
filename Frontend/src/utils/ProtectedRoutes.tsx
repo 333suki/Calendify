@@ -15,8 +15,8 @@ export default function ProtectedRoutes() {
                 });
 
                 if (response.status === 498) {
-                    // console.log("Got 498");
-                    // console.log("Doing refresh request");
+                    console.log("Got 498");
+                    console.log("Doing refresh request");
                     response = await fetch("http://localhost:5117/auth/refresh", {
                         method: "POST",
                         headers: {
@@ -39,12 +39,12 @@ export default function ProtectedRoutes() {
                     }
 
                     if (response.ok) {
-                        // console.log("Refresh request OK");
+                        console.log("Refresh request OK");
                         if (data) {
                             localStorage.setItem("accessToken", data.accessToken);
                             localStorage.setItem("refreshToken", data.refreshToken);
                         }
-                        // console.log("Updated accessToken and refreshToken");
+                        console.log("Updated accessToken and refreshToken");
                     }
                 }
                 setAuthorized(response.ok);
