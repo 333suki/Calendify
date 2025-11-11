@@ -1,8 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styles from "./Navigation.module.css";
 
 export default function Navigation() {
     const navigate = useNavigate();
+    const location = useLocation();
+
     const handleLogout = () => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
@@ -12,58 +14,56 @@ export default function Navigation() {
     return (
         <nav className={styles.navigation}>
             <div
-                className={`${styles.menuItem} ${styles.home}`}
+                className={`${styles.menuItem} ${location.pathname === "/home" ? styles.active : ""}`}
                 onClick={() => navigate("/home")}
             >
                 Home
             </div>
 
             <div
-                className={`${styles.menuItem} ${styles.calendar}`}
+                className={`${styles.menuItem} ${location.pathname === "/calendar" ? styles.active : ""}`}
                 onClick={() => navigate("/calendar")}
             >
                 Calendar
             </div>
 
             <div
-                className={`${styles.menuItem} ${styles.events}`}
+                className={`${styles.menuItem}  ${location.pathname === "/events"? styles.active : ""}`}
                 onClick={() => navigate("/events")}
             >
                 Events
-
             </div>
 
             <div
-                className={`${styles.menuItem} ${styles.events}`}
+                className={`${styles.menuItem}  ${location.pathname === "/room-bookings" ? styles.active : ""}`}
                 onClick={() => navigate("/room-bookings")}
             >
                 Room Bookings
             </div>
 
             <div
-                className={`${styles.menuItem} ${styles.events}`}
+                className={`${styles.menuItem}  ${location.pathname === "/office-attendance"? styles.active : ""}`}
                 onClick={() => navigate("/office-attendance")}
             >
                 Office Attendance
             </div>
 
-
             <div
-                className={`${styles.menuItem} ${styles.profile}`}
+                className={`${styles.menuItem}  ${location.pathname === "/profile"? styles.active : ""}`}
                 onClick={() => navigate("/profile")}
             >
                 Profile
             </div>
 
             <div
-                className={`${styles.menuItem} ${styles.settings}`}
+                className={`${styles.menuItem}  ${location.pathname === "/settings" ? styles.active : ""}`}
                 onClick={() => navigate("/settings")}
             >
                 Settings
             </div>
 
             <div
-                className={`${styles.menuItem} ${styles.logout}`}
+                className={`${styles.menuItem}`}
                 onClick={handleLogout}
             >
                 Logout

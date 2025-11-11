@@ -22,3 +22,7 @@
 .menuItem:hover {
     background: rgba(236, 239, 244, 0.1);
 }
+
+.menuItem.active {
+    background: rgba(236, 239, 244, 0.1);
+}
