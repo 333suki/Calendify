@@ -17,12 +17,15 @@
     border-radius: 10px;
     transition: background 0.3s ease;
     font-size: 16px;
+    border: transparent 2px solid;
 }
 
 .menuItem:hover {
     background: rgba(236, 239, 244, 0.1);
+    cursor: pointer;
 }
 
 .menuItem.active {
     background: rgba(236, 239, 244, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
