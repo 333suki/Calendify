@@ -1,0 +1,63 @@
+.mainContainer {
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(30px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border-radius: 1rem;
+    padding: 1rem;
+    grid-row-start: 1;
+    grid-row-end: 3;
+}
+
+.mainContainer h1 {
+    color: #eceff4;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.mainContainer form {
+    /*border: 1px solid red;*/
+    display: flex;
+    flex-direction: column;
+    color: white;
+    margin: 1rem;
+}
+
+.mainContainer form .row {
+    margin: 1rem 0 0 0;
+}
+
+.mainContainer form .row h2 {
+    color: #9a9a9a;
+    margin: 0 0 0.5rem 0.5rem;
+}
+
+.mainContainer form input {
+    width: 100%;
+    background: #9a9a9a22;
+    outline: none;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    font-size: 16px;
+    padding: 1rem;
+    color: #eceff4;
+}
+
+.mainContainer form button {
+    margin: 2rem 0 0 0;
+    width: 50%;
+    background: rgba(20, 161, 81, 0.2);
+    outline: none;
+    border: 2px solid rgba(19, 185, 158, 0.2);
+    border-radius: 1rem;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 1rem;
+    color: rgb(101, 204, 184);
+}
+
+.mainContainer form button:hover {
+    background-color: rgba(17, 255, 220, 0.2);
+    transition: background-color 0.3s ease;
+}
