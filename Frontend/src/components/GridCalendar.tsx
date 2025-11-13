@@ -1,5 +1,6 @@
-import React from "react";
 import styles from "./GridCalendar.module.css";
+
+import arrowIcon from "../assets/arrow.svg";
 
 interface GridCalendarProps {
     currentDate: Date;
@@ -18,7 +19,7 @@ export default function GridCalendar({
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
-    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const dayNames = ["S", "M", "T", "W", "T", "F", "S"];
 
     const getDaysInMonth = (date: Date) => {
         const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -60,12 +61,19 @@ export default function GridCalendar({
     };
 
     return (
-        <div className={styles.gridCalendar}>
+        <div className={styles.mainContainer} onWheel={(e) => {
+            if (e.deltaY < 0) onNavigateMonth('prev');
+            else if (e.deltaY > 0) onNavigateMonth('next');
+        }}>
             <div className={styles.monthNavigation}>
                 <h3>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h3>
                 <div className={styles.monthNavButtons}>
-                    <button className={styles.prevMonthButton} onClick={() => onNavigateMonth('prev')}>←</button>
-                    <button className={styles.nextMonthButton} onClick={() => onNavigateMonth('next')}>→</button>
+                    <button className={styles.prevMonthButton} onClick={() => onNavigateMonth('prev')}>
+                        <img src={arrowIcon} alt=""/>
+                    </button>
+                    <button className={styles.nextMonthButton} onClick={() => onNavigateMonth('next')}>
+                        <img src={arrowIcon} alt=""/>
+                    </button>
                 </div>
             </div>
             
