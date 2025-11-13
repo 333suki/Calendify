@@ -62,9 +62,11 @@ export default function GridCalendar({
     return (
         <div className={styles.gridCalendar}>
             <div className={styles.monthNavigation}>
-                <button onClick={() => onNavigateMonth('prev')}>← Prev</button>
                 <h3>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h3>
-                <button onClick={() => onNavigateMonth('next')}>Next →</button>
+                <div className={styles.monthNavButtons}>
+                    <button className={styles.prevMonthButton} onClick={() => onNavigateMonth('prev')}>←</button>
+                    <button className={styles.nextMonthButton} onClick={() => onNavigateMonth('next')}>→</button>
+                </div>
             </div>
             
             <div className={styles.calendarHeader}>
