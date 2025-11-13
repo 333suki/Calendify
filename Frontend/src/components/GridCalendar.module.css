@@ -5,24 +5,40 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     border-radius: 15px;
     padding: 1rem;
-    max-width: 400px;
-    max-height: 460px;
+    max-width: 250px;
+    max-height: 280px;
 }
 
 .monthNavigation {
-    /*border: 1px solid blue;*/
+    /* border: 1px solid blue; */
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.monthNavigation button {
+.monthNavButtons {
+    /* border: 1px solid red; */
+    display: flex;
+}
+
+.nextMonthButton {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #eceff4;
-    border-radius: 8px;
-    padding: 8px 16px;
+    border-radius: 0px 8px 8px 0px;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.prevMonthButton {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #eceff4;
+    border-radius: 8px 0px 0px 8px;
+    padding: 4px 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 14px;
@@ -30,7 +46,6 @@
 
 .monthNavigation button:hover {
     background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px);
 }
 
 .monthNavigation h3 {
