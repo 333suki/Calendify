@@ -1,23 +1,27 @@
 .mainContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
     background-image: url("../assets/mountain-background.jpg");
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: center;
+    display: grid;
+    height: 100dvh;
+    @media (min-width: 600px) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-position: center;
+    }
 }
 
 .loginContainer {
-    width: 420px;
     background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(30px);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    color: white;
-    border-radius: 10px;
     padding: 30px 40px;
+    @media (min-width: 600px) {
+        width: 420px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        border-radius: 1rem;
+    }
 }
 
 .loginContainer .personIcon {
@@ -62,27 +66,25 @@
 
 .mainContainer .errorForgot {
     display: grid;
-    margin: -15px 0 15px 0;
+    margin: -1rem 0 1rem 0;
     grid-template-columns: 7fr 5fr;
 }
 
 .errorForgot .forgot {
     text-align: right;
-    margin: 0 8px 0 0;
+    margin: 0 0.5rem 0 0;
 }
 
 .errorForgot .error {
-    margin: 0 0 0 8px;
+    margin: 0 0 0 0.5rem;
 }
 
 .errorMessage {
-    font-size: 16px;
     color: darkred;
 }
 
 .forgot a {
     color: #eceff4;
-    font-size: 16px;
     text-decoration: none;
 }
 
