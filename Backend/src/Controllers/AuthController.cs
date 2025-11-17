@@ -1,0 +1,264 @@
+using System.Xml.Serialization;
+using Backend.Models;
+using Microsoft.AspNetCore.Mvc;
+using Backend;
+using Backend.Authorization;
+using System.Text.Json;
+
+namespace Backend.Controllers;
+
+[ApiController]
+[Route("auth")]
+public class AuthController(DatabaseContext db) : ControllerBase {
+    private readonly DatabaseContext db = db;
+
+    [HttpPost("login")]
+    public IActionResult Login([FromBody] Backend.Dtos.LoginRequest? loginRequest) {
+        // Empty request body
+        if (loginRequest is null) {
+            return BadRequest(
+                new
+                {
+                    message = "Empty request body"
+                }
+            );
+        }
+
+        // Username or password not provided in request body
+        if (loginRequest.Username is null || loginRequest.Password is null) {
+            return BadRequest(
+                new
+                {
+                    message = "Missing credentials"
+                }
+            );
+        }
+
+        // Username not found
+        Backend.Models.User? user = db.Users.FirstOrDefault(user => user.Username == loginRequest.Username);
+        if (user is null) {
+            return NotFound(
+                new
+                {
+                    message = "Invalid username"
+                }
+            );
+        }
+
+        // Wrong password
+        if (HashUtils.Sha256Hash(loginRequest.Password) != user.Password) {
+            return Unauthorized();
+        }
+    
+        // Generate refresh token
+        string refreshToken = TokenGenerator.GenerateRefreshToken();
+        
+        // Check if an entry in the RefreshTokens table is already present for that user
+        Backend.Models.RefreshToken? refreshTokenEntry = db.RefreshTokens
+            .FirstOrDefault(t => t.UserID == user.ID);
+        if (refreshTokenEntry is not null) {
+            // If yes, update it
+            refreshTokenEntry.Token = refreshToken;
+        } else {
+            // Else create the entry
+            db.RefreshTokens.Add(new Backend.Models.RefreshToken(refreshToken, user.ID));
+        }
+        db.SaveChanges();
+
+        return Ok(
+            new
+            {
+                accessToken = TokenGenerator.GenerateAccessToken(5, user.ID.ToString(), user.Role),
+                refreshToken
+            }
+        );
+    }
+    
+    [HttpPost("register")]
+    public IActionResult Register([FromBody] Backend.Dtos.RegisterRequest? registerRequest) {
+        // Empty request body
+        if (registerRequest is null) {
+            return BadRequest(
+                new
+                {
+                    message = "Empty request body"
+                }
+            );
+        }
+
+        // Username or password not provided in request body
+        if (registerRequest.Username is null || registerRequest.Email is null || registerRequest.Password is null) {
+            return BadRequest(
+                new
+                {
+                    message = "Missing credentials"
+                }
+            );
+        }
+
+        // Username already taken
+        Backend.Models.User? user = db.Users.FirstOrDefault(user => user.Username == registerRequest.Username);
+        if (user is not null) {
+            return Conflict(
+                new
+                {
+                    message = "Username already taken"
+                }
+            );
+        }
+
+        db.Users.Add(new Backend.Models.User(registerRequest.Username, registerRequest.Email,
+            Backend.HashUtils.Sha256Hash(registerRequest.Password),
+            Backend.Models.Role.User));
+            
+        db.SaveChanges();
+        return Created();
+    }
+
+
+    
+    [HttpPost("authorize")]
+    public IActionResult Authorize(HttpRequest request)
+    {
+        if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
+            return Unauthorized();
+        }
+
+        if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
+            switch (result) {
+                case AuthUtils.TokenParseResult.InvalidFormat:
+                    return BadRequest(
+                        new
+                        {
+                            message = "Invalid Authorization header"
+                        }
+                    );
+                case AuthUtils.TokenParseResult.Invalid:
+                    return Unauthorized();
+                case AuthUtils.TokenParseResult.TokenExpired:
+                    return StatusCode(498,
+                        new
+                        {
+                            message = "Token expired"
+                        }
+                    );
+                case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
+                case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
+                case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
+                    return BadRequest(
+                        new
+                        {
+                            message = "Invalid Authorization header"
+                        }
+                    );
+                case AuthUtils.TokenParseResult.HeaderDeserializeError:
+                    return StatusCode(500,
+                        new
+                        {
+                            message = "Header deserialization error"
+                        }
+                    );
+                case AuthUtils.TokenParseResult.PayloadDeserializeError:
+                    return StatusCode(500,
+                        new
+                        {
+                            message = "Payload deserialization error"
+                        }
+                    );
+            }
+        }
+    
+        return Ok();
+    }
+
+        
+    [HttpPost("refresh")]
+    public IActionResult Refresh([FromBody] Backend.Dtos.RefreshRequest? refreshRequest, HttpRequest request) {
+         Console.WriteLine("Got refresh request");
+        if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
+            return Unauthorized();
+        }
+        
+        if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
+            switch (result) {
+                case AuthUtils.TokenParseResult.InvalidFormat:
+                    return BadRequest(
+                        new
+                        {
+                            message = "Invalid Authorization header"
+                        }
+                    );
+                case AuthUtils.TokenParseResult.Invalid:
+                    return Unauthorized();
+                case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
+                case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
+                case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
+                    return BadRequest(
+                        new
+                        {
+                            message = "Invalid Authorization header"
+                        }
+                    );
+                case AuthUtils.TokenParseResult.HeaderDeserializeError:
+                    return StatusCode(500,
+                        new
+                        {
+                            message = "Header deserialization error"
+                        }
+                    );
+                case AuthUtils.TokenParseResult.PayloadDeserializeError:
+                    return StatusCode(500,
+                        new
+                        {
+                            message = "Payload deserialization error"
+                        }
+                    );
+            }
+        }
+        
+        if (refreshRequest is null) {
+            return BadRequest(
+                new
+                {
+                    message = "Empty request body"
+                }
+            );
+        }
+
+        string? token = db.RefreshTokens
+            .Where(t => t.UserID.ToString() == payload.Sub)
+            .Select(t => t.Token)
+            .FirstOrDefault();
+
+        if (token is null) {
+            return Unauthorized();
+        }
+
+        if (token != refreshRequest.refreshToken) {
+            return Unauthorized();
+        }
+        
+        string newRefreshToken = TokenGenerator.GenerateRefreshToken();
+        Backend.Models.RefreshToken? refreshTokenEntry = db.RefreshTokens
+            .FirstOrDefault(t => t.UserID.ToString() == payload!.Sub);
+        if (refreshTokenEntry is null) {
+            return NotFound(
+                new
+                {
+                    message = $"Refresh token for user with id {payload!.Sub} not found"
+                }
+            );
+        }
+        refreshTokenEntry.Token = newRefreshToken;
+        db.SaveChanges();
+
+        return Ok(
+            new
+            {
+                accessToken = TokenGenerator.GenerateAccessToken(5, payload!.Sub, (Backend.Models.Role)payload.Role),
+                refreshToken = newRefreshToken
+            }
+        );
+  
+    }
+}
