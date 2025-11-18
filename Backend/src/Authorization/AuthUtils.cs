@@ -66,7 +66,7 @@ public class AuthUtils {
         }
         
         using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(TokenGenerator.Secret))) {
-            if (AuthUtils.Base64UrlEncode(hmac.ComputeHash(Encoding.UTF8.GetBytes($"{headerEncoded}.{payloadEncoded}"))) != signature) {
+            if (Base64UrlEncode(hmac.ComputeHash(Encoding.UTF8.GetBytes($"{headerEncoded}.{payloadEncoded}"))) != signature) {
                 result = TokenParseResult.Invalid;
                 header = null;
                 payload = null;
@@ -74,7 +74,7 @@ public class AuthUtils {
             }
         }
         
-        string headerJson = Encoding.UTF8.GetString(AuthUtils.Base64UrlDecode(tokenSplit[0]));
+        string headerJson = Encoding.UTF8.GetString(Base64UrlDecode(tokenSplit[0]));
         if (String.IsNullOrEmpty(headerJson)) {
             result = TokenParseResult.HeaderNullOrEmpty;
             header = null;
@@ -82,7 +82,7 @@ public class AuthUtils {
             return false;
         }
         
-        string payloadJson = Encoding.UTF8.GetString(AuthUtils.Base64UrlDecode(tokenSplit[1]));
+        string payloadJson = Encoding.UTF8.GetString(Base64UrlDecode(tokenSplit[1]));
         if (String.IsNullOrEmpty(payloadJson)) {
             result = TokenParseResult.PayloadNullOrEmpty;
             header = null;
@@ -90,7 +90,7 @@ public class AuthUtils {
             return false;
         }
         
-        Backend.Authorization.Header? deserializedHeader = JsonSerializer.Deserialize<Header>(headerJson);
+        Header? deserializedHeader = JsonSerializer.Deserialize<Header>(headerJson);
         if (deserializedHeader is null) {
             result = TokenParseResult.HeaderDeserializeError;
             header = null;
@@ -101,7 +101,7 @@ public class AuthUtils {
         // Console.WriteLine($"Alg: {header.Alg}");
         // Console.WriteLine($"Typ: {header.Typ}");
         
-        Backend.Authorization.Payload? deserializedPayload = JsonSerializer.Deserialize<Payload>(payloadJson);
+        Payload? deserializedPayload = JsonSerializer.Deserialize<Payload>(payloadJson);
         if (deserializedPayload is null) {
             result = TokenParseResult.PayloadDeserializeError;
             header = null;
