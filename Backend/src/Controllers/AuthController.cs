@@ -116,8 +116,8 @@ public class AuthController(DatabaseContext db) : ControllerBase {
 
     
     [HttpPost("authorize")]
-    public IActionResult Authorize(HttpRequest request)
-    {
+    public IActionResult Authorize() {
+        var request = Request;
         if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
             return Unauthorized();
         }
@@ -171,8 +171,8 @@ public class AuthController(DatabaseContext db) : ControllerBase {
 
         
     [HttpPost("refresh")]
-    public IActionResult Refresh([FromBody] RefreshRequest? refreshRequest, HttpRequest request) {
-         Console.WriteLine("Got refresh request");
+    public IActionResult Refresh([FromBody] RefreshRequest? refreshRequest) {
+        var request = Request;
         if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
             return Unauthorized();
         }
