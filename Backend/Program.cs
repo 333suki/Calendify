@@ -1,11 +1,5 @@
-using System.Net;
 using Backend;
-using Backend.Authorization;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration.UserSecrets;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options => {

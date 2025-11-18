@@ -7,13 +7,13 @@ public class DatabaseContext : DbContext
 {
     public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) {}
 
-    public DbSet<Models.User> Users { get; set; }
-    public DbSet<Models.RefreshToken> RefreshTokens { get; set; }
-    public DbSet<Models.Event> Events { get; set; }
-    public DbSet<Models.EventAttendance> EventAttendances { get; set; }
-    public DbSet<Models.OfficeAttendance> OfficeAttendances { get; set; }
-    public DbSet<Models.Room> Rooms { get; set; }
-    public DbSet<Models.RoomBooking> RoomBookings { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<Event> Events { get; set; }
+    public DbSet<EventAttendance> EventAttendances { get; set; }
+    public DbSet<OfficeAttendance> OfficeAttendances { get; set; }
+    public DbSet<Room> Rooms { get; set; }
+    public DbSet<RoomBooking> RoomBookings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);

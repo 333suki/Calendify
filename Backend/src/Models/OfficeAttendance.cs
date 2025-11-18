@@ -1,7 +1,7 @@
-namespace Backend.Models;
-
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Backend.Models;
 
 public class OfficeAttendance {
     public OfficeAttendance(int userID, DateOnly? date, OfficeAttendanceStatus status) {

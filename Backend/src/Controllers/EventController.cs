@@ -1,9 +1,7 @@
-using System.Xml.Serialization;
+using Backend.Authorization;
+using Backend.Dtos;
 using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
-using Backend;
-using Backend.Authorization;
-using System.Text.Json;
 
 namespace Backend.Controllers;
 
@@ -14,7 +12,7 @@ public class EventController(DatabaseContext db) : ControllerBase {
     private readonly DatabaseContext db = db;
     
     [HttpPost("")]
-    public IActionResult CreateEvent([FromBody] Backend.Dtos.NewEventRequest? newEventRequest, HttpRequest request)
+    public IActionResult CreateEvent([FromBody] NewEventRequest? newEventRequest, HttpRequest request)
     {
         if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
             return Unauthorized();
@@ -84,7 +82,7 @@ public class EventController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        db.Events.Add(new Backend.Models.Event(newEventRequest.Title, newEventRequest.Description, newEventRequest.Date));
+        db.Events.Add(new Event(newEventRequest.Title, newEventRequest.Description, newEventRequest.Date));
         db.SaveChanges();
 
         return Ok();

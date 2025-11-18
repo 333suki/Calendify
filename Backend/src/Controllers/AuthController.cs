@@ -1,9 +1,7 @@
-using System.Xml.Serialization;
+using Backend.Authorization;
+using Backend.Dtos;
 using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
-using Backend;
-using Backend.Authorization;
-using System.Text.Json;
 
 namespace Backend.Controllers;
 
@@ -13,7 +11,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
     private readonly DatabaseContext db = db;
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] Backend.Dtos.LoginRequest? loginRequest) {
+    public IActionResult Login([FromBody] LoginRequest? loginRequest) {
         // Empty request body
         if (loginRequest is null) {
             return BadRequest(
@@ -35,7 +33,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
         }
 
         // Username not found
-        Backend.Models.User? user = db.Users.FirstOrDefault(user => user.Username == loginRequest.Username);
+        User? user = db.Users.FirstOrDefault(user => user.Username == loginRequest.Username);
         if (user is null) {
             return NotFound(
                 new
@@ -54,14 +52,14 @@ public class AuthController(DatabaseContext db) : ControllerBase {
         string refreshToken = TokenGenerator.GenerateRefreshToken();
         
         // Check if an entry in the RefreshTokens table is already present for that user
-        Backend.Models.RefreshToken? refreshTokenEntry = db.RefreshTokens
+        RefreshToken? refreshTokenEntry = db.RefreshTokens
             .FirstOrDefault(t => t.UserID == user.ID);
         if (refreshTokenEntry is not null) {
             // If yes, update it
             refreshTokenEntry.Token = refreshToken;
         } else {
             // Else create the entry
-            db.RefreshTokens.Add(new Backend.Models.RefreshToken(refreshToken, user.ID));
+            db.RefreshTokens.Add(new RefreshToken(refreshToken, user.ID));
         }
         db.SaveChanges();
 
@@ -75,7 +73,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
     }
     
     [HttpPost("register")]
-    public IActionResult Register([FromBody] Backend.Dtos.RegisterRequest? registerRequest) {
+    public IActionResult Register([FromBody] RegisterRequest? registerRequest) {
         // Empty request body
         if (registerRequest is null) {
             return BadRequest(
@@ -97,7 +95,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
         }
 
         // Username already taken
-        Backend.Models.User? user = db.Users.FirstOrDefault(user => user.Username == registerRequest.Username);
+        User? user = db.Users.FirstOrDefault(user => user.Username == registerRequest.Username);
         if (user is not null) {
             return Conflict(
                 new
@@ -107,9 +105,9 @@ public class AuthController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        db.Users.Add(new Backend.Models.User(registerRequest.Username, registerRequest.Email,
-            Backend.HashUtils.Sha256Hash(registerRequest.Password),
-            Backend.Models.Role.User));
+        db.Users.Add(new User(registerRequest.Username, registerRequest.Email,
+            HashUtils.Sha256Hash(registerRequest.Password),
+            Role.User));
             
         db.SaveChanges();
         return Created();
@@ -173,7 +171,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
 
         
     [HttpPost("refresh")]
-    public IActionResult Refresh([FromBody] Backend.Dtos.RefreshRequest? refreshRequest, HttpRequest request) {
+    public IActionResult Refresh([FromBody] RefreshRequest? refreshRequest, HttpRequest request) {
          Console.WriteLine("Got refresh request");
         if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
             return Unauthorized();
@@ -239,7 +237,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
         }
         
         string newRefreshToken = TokenGenerator.GenerateRefreshToken();
-        Backend.Models.RefreshToken? refreshTokenEntry = db.RefreshTokens
+        RefreshToken? refreshTokenEntry = db.RefreshTokens
             .FirstOrDefault(t => t.UserID.ToString() == payload!.Sub);
         if (refreshTokenEntry is null) {
             return NotFound(
@@ -255,7 +253,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
         return Ok(
             new
             {
-                accessToken = TokenGenerator.GenerateAccessToken(5, payload!.Sub, (Backend.Models.Role)payload.Role),
+                accessToken = TokenGenerator.GenerateAccessToken(5, payload!.Sub, (Role)payload.Role),
                 refreshToken = newRefreshToken
             }
         );

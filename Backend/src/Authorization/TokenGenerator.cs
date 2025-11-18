@@ -18,7 +18,7 @@ public static class TokenGenerator {
 
         string toSign = $"{headerEncoded}.{payloadEncoded}";
         string signatureEncoded;
-        using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(TokenGenerator.Secret))) {
+        using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(Secret))) {
             signatureEncoded = AuthUtils.Base64UrlEncode(hmac.ComputeHash(Encoding.UTF8.GetBytes(toSign)));
         }
 
