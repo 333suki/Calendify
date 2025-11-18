@@ -66,7 +66,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
         return Ok(
             new
             {
-                accessToken = TokenGenerator.GenerateAccessToken(5, user.ID.ToString(), user.Role),
+                accessToken = TokenGenerator.GenerateAccessToken(120, user.ID.ToString(), user.Role),
                 refreshToken
             }
         );
@@ -253,7 +253,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
         return Ok(
             new
             {
-                accessToken = TokenGenerator.GenerateAccessToken(5, payload!.Sub, (Role)payload.Role),
+                accessToken = TokenGenerator.GenerateAccessToken(120, payload!.Sub, (Role)payload.Role),
                 refreshToken = newRefreshToken
             }
         );
