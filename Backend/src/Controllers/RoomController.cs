@@ -74,9 +74,8 @@ public class RoomController(DatabaseContext db) : ControllerBase {
             }
         }
 
-        if((Role)Enum.Parse(typeof(Role), payload!.Role.ToString()) != Role.Admin)
+        if(payload!.Role != (int)Role.Admin)
         {
-            
             return Unauthorized(
                 new
                 {
