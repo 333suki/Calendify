@@ -1,12 +1,13 @@
 .mainContainer {
-    min-height: 100vh;
-    background-image: url("../assets/mountain-background.jpg");
+    height: 100dvh;
+    background-image: url("../../assets/mountain-background.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
     display: grid;
     grid-template-rows: 1fr 7fr;
-    padding: 20px;
+    gap: 1rem;
+    padding: 1rem;
 }
 
 .navigationContainer {
@@ -16,5 +17,6 @@
 }
 
 .content {
-    
+    display: flex;
+    /* gap: 1rem; */
 }

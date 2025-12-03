@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import styles from "./Login.module.css";
 
-import personIcon from "../assets/person.svg";
+import personIcon from "../../assets/person.svg";
 
 export default function Login() {
     const [username, setUsername] = useState("");

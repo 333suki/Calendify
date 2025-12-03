@@ -1,0 +1,25 @@
+.mainContainer {
+    height: 100dvh;
+    background-image: url("../../assets/mountain-background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    display: grid;
+    gap: 1rem;
+    grid-template-rows: 1fr 7fr;
+    padding: 1rem;
+}
+
+.navigationContainer {
+    /*border: 1px solid red;*/
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    /* border: 1px solid red; */
+    /*display: grid;*/
+    /*grid-template-columns: 1fr 3fr;*/
+    display: flex;
+    gap: 1rem;
+}
