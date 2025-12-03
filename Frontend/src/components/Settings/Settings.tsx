@@ -1,8 +1,8 @@
-import styles from "./RoomBookings.module.css";
-import Navigation from "./Navigation";
+import styles from "./Settings.module.css";
+import Navigation from "../Navigation";
 
 
-export default function RoomBookings() {
+export default function Settings() {
     return (
         <div className={styles.mainContainer}>
             <div className ={styles.navigationContainer}>

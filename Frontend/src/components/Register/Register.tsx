@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import styles from "./Register.module.css";
 
-import personIcon from "../assets/person.svg";
+import personIcon from "../../assets/person.svg";
 
 export default function Register() {
     const [email, setEmail] = useState("");

@@ -1,17 +1,16 @@
-import styles from "./Profile.module.css";
-import Navigation from "./Navigation";
-import ProfilePanel from "./ProfilePanel";
+import styles from "./RoomBookings.module.css";
+import Navigation from "../Navigation";
 
-export default function Profile() {
+
+export default function RoomBookings() {
     return (
         <div className={styles.mainContainer}>
             <div className ={styles.navigationContainer}>
                 <Navigation/>
             </div>
             <div className={styles.content}>
-                <ProfilePanel />
-            </div>
 
+            </div>
         </div>
     );
 }

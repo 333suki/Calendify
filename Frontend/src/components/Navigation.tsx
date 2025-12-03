@@ -21,13 +21,6 @@ export default function Navigation() {
             </div>
 
             <div
-                className={`${styles.menuItem} ${location.pathname === "/calendar" ? styles.active : ""}`}
-                onClick={() => navigate("/calendar")}
-            >
-                Calendar
-            </div>
-
-            <div
                 className={`${styles.menuItem}  ${location.pathname === "/events"? styles.active : ""}`}
                 onClick={() => navigate("/events")}
             >
