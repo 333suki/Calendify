@@ -1,6 +1,6 @@
 import styles from "./RoomBookings.module.css";
 import Navigation from "./Navigation";
-
+import RoomBookingPanel from "./RoomBookingPanel";
 
 export default function RoomBookings() {
     return (
@@ -9,7 +9,7 @@ export default function RoomBookings() {
                 <Navigation/>
             </div>
             <div className={styles.content}>
-
+                <RoomBookingPanel/>
             </div>
         </div>
     );
