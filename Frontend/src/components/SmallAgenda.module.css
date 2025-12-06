@@ -1,0 +1,14 @@
+.mainContainer {
+    /* border: 1px solid red; */
+}
+
+.pickerContainer :global(.rdp-root) {
+  --rdp-accent-color: cornflowerblue;
+  background: transparent;
+  backdrop-filter: blur(30px);
+  width: fit-content;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  padding: 1rem;
+}

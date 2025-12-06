@@ -9,6 +9,7 @@ namespace Backend.Controllers;
 [Route("auth")]
 public class AuthController(DatabaseContext db) : ControllerBase {
     private readonly DatabaseContext db = db;
+    const int TokenDuration = 1200;
 
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest? loginRequest) {
@@ -66,7 +67,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
         return Ok(
             new
             {
-                accessToken = TokenGenerator.GenerateAccessToken(120, user.ID.ToString(), user.Role),
+                accessToken = TokenGenerator.GenerateAccessToken(TokenDuration, user.ID.ToString(), user.Role),
                 refreshToken
             }
         );
@@ -253,7 +254,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
         return Ok(
             new
             {
-                accessToken = TokenGenerator.GenerateAccessToken(120, payload!.Sub, (Role)payload.Role),
+                accessToken = TokenGenerator.GenerateAccessToken(TokenDuration, payload!.Sub, (Role)payload.Role),
                 refreshToken = newRefreshToken
             }
         );

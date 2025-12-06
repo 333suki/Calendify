@@ -1,15 +1,16 @@
-import styles from "./RoomBookings.module.css";
-import Navigation from "./Navigation";
-import RoomBookingPanel from "./RoomBookingPanel";
+import Navigation from "../Navigation";
 
-export default function RoomBookings() {
+import styles from "./OfficeAttendance.module.css";
+
+
+export default function OfficeAttendance() {
     return (
         <div className={styles.mainContainer}>
             <div className ={styles.navigationContainer}>
                 <Navigation/>
             </div>
             <div className={styles.content}>
-                <RoomBookingPanel/>
+
             </div>
         </div>
     );

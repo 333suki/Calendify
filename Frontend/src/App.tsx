@@ -1,16 +1,16 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Home from "./components/Home.tsx";
-import Login from "./components/Login";
+import Home from "./components/Home/Home.tsx";
+import Login from "./components/Login/Login.tsx";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
-import Register from "./components/Register";
+import Register from "./components/Register/Register.tsx";
 
-import Calendar from "./components/Calendar";
-import Events from "./components/Events";
-import Profile from "./components/Profile";
-import Settings from "./components/Settings";
-import RoomBookings from "./components/RoomBookings";
-import OfficeAttendance from "./components/OfficeAttendance";
+// import Calendar from "./components/Calendar";
+import Events from "./components/Events/Events.tsx";
+import Profile from "./components/Profile/Profile.tsx";
+import Settings from "./components/Settings/Settings.tsx";
+import RoomBookings from "./components/RoomBookings/RoomBookings.tsx";
+import OfficeAttendance from "./components/OfficeAttendance/OfficeAttendance.tsx";
 
 function App() {
     return (
@@ -22,7 +22,6 @@ function App() {
                     <Route path="/home" element={<Home/>} />
                     <Route path="/room-bookings" element={<RoomBookings />} />
                     <Route path="/office-attendance" element={<OfficeAttendance />} />
-                    <Route path="/calendar" element={<Calendar />} />
                     <Route path="/events" element={<Events />} /> 
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/settings" element={<Settings />} />

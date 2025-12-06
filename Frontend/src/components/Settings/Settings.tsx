@@ -1,5 +1,5 @@
 import styles from "./Settings.module.css";
-import Navigation from "./Navigation";
+import Navigation from "../Navigation";
 
 
 export default function Settings() {
