@@ -31,14 +31,14 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
                     return BadRequest(
                         new
                         {
-                            message = "Invalid Authorization header"
+                            message = "Invalid Authorization token format"
                         }
                     );
                 case AuthUtils.TokenParseResult.Invalid:
-                        return Unauthorized(
+                    return Unauthorized(
                         new
                         {
-                            message = "No authorization header provided"
+                            message = "Invalid Authorization token"
                         }
                     );
                 case AuthUtils.TokenParseResult.TokenExpired:
@@ -75,12 +75,13 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
         }
 
         Room? room = db.Rooms.Find(req.RoomID);
-        if (room is null)
+        if (room is null) {
             return NotFound(
                 new {
-                     message = "Room not found" 
-                    }
-                    );
+                    message = "Room not found" 
+                }
+            );
+        }
 
         bool overlap = db.RoomBookings.Any(b =>
             b.RoomID == req.RoomID &&
@@ -88,12 +89,13 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
             req.StartTime < b.EndTime
         );
 
-        if (overlap)
+        if (overlap) {
             return Conflict(
-                new { 
-                        message = "Room already booked in that time period" 
-                    }
-                );
+                new {
+                    message = "Room already booked in that time period" 
+                }
+            );
+        }
 
         RoomBooking booking = new RoomBooking(
             req.RoomID,
@@ -132,14 +134,14 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
                     return BadRequest(
                         new
                         {
-                            message = "Invalid Authorization header"
+                            message = "Invalid Authorization token format"
                         }
                     );
                 case AuthUtils.TokenParseResult.Invalid:
-                        return Unauthorized(
+                    return Unauthorized(
                         new
                         {
-                            message = "No authorization header provided"
+                            message = "Invalid Authorization token"
                         }
                     );
                 case AuthUtils.TokenParseResult.TokenExpired:
@@ -175,8 +177,9 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
             }
         }
 
-        if (payload!.Role == (int)Role.Admin)
+        if (payload!.Role == (int)Role.Admin) {
             return Ok(db.RoomBookings.ToList());
+        }
 
         return Ok(db.RoomBookings.Where(u => u.ID == Convert.ToInt32(payload.Sub)).ToList());
     }
@@ -201,14 +204,14 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
                     return BadRequest(
                         new
                         {
-                            message = "Invalid Authorization header"
+                            message = "Invalid Authorization token format"
                         }
                     );
                 case AuthUtils.TokenParseResult.Invalid:
-                        return Unauthorized(
+                    return Unauthorized(
                         new
                         {
-                            message = "No authorization header provided"
+                            message = "Invalid Authorization token"
                         }
                     );
                 case AuthUtils.TokenParseResult.TokenExpired:
@@ -265,9 +268,9 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
         return Ok(new { message = "Booking deleted" });
     }
 
-[HttpPut("{id}")]
-public IActionResult UpdateBooking(int id, [FromBody] UpdateRoomBookingRequest req)
-{
+    [HttpPut("{id}")]
+    public IActionResult UpdateBooking(int id, [FromBody] UpdateRoomBookingRequest req)
+    {
         var request = Request;
         if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
             return Unauthorized(
@@ -284,14 +287,14 @@ public IActionResult UpdateBooking(int id, [FromBody] UpdateRoomBookingRequest r
                     return BadRequest(
                         new
                         {
-                            message = "Invalid Authorization header"
+                            message = "Invalid Authorization token format"
                         }
                     );
                 case AuthUtils.TokenParseResult.Invalid:
-                        return Unauthorized(
+                    return Unauthorized(
                         new
                         {
-                            message = "No authorization header provided"
+                            message = "Invalid Authorization token"
                         }
                     );
                 case AuthUtils.TokenParseResult.TokenExpired:
@@ -327,42 +330,47 @@ public IActionResult UpdateBooking(int id, [FromBody] UpdateRoomBookingRequest r
             }
         }
 
-        if (payload!.Role != (int)Role.Admin)
+        if (payload!.Role != (int)Role.Admin) {
             return Unauthorized(
                 new { 
-                        message = "User is not admin" 
-                    }
-                );
-         RoomBooking? booking = db.RoomBookings.Find(id);
+                    message = "User is not admin" 
+                }
+            );
+        }
+        
+        RoomBooking? booking = db.RoomBookings.Find(id);
+        if (booking is null)
+            return NotFound(new { message = "Booking not found" });
 
-    if (booking is null)
-        return NotFound(new { message = "Booking not found" });
+        Room? room = db.Rooms.Find(req.roomID);
+        if (room is null)
+            return NotFound(new { message = "Room not found" });
 
-    Room? room = db.Rooms.Find(req.roomID);
-    if (room is null)
-        return NotFound(new { message = "Room not found" });
+        User? user = db.Users.Find(req.userID);
+        if (user is null)
+            return NotFound(new { message = "User not found" });
 
-    bool overlap = db.RoomBookings.Any(b =>
-        b.ID != id &&  
-        b.RoomID == req.roomID &&
-        b.StartTime < req.endtime &&
-        req.starttime < b.EndTime
-    );
+        bool overlap = db.RoomBookings.Any(b =>
+            b.ID != id &&  
+            b.RoomID == req.roomID &&
+            b.StartTime < req.endtime &&
+            req.starttime < b.EndTime
+        );
 
-    if (overlap)
-        return Conflict(
-            new {
-                 message = "Room already booked in that time period" 
-                 }
-                );
+        if (overlap)
+            return Conflict(
+                new {
+                     message = "Room already booked in that time period" 
+                     }
+                    );
 
-    booking.RoomID = req.roomID;
-    booking.UserID = req.userID;
-    booking.StartTime = req.starttime;
-    booking.EndTime = req.endtime;
+        booking.RoomID = req.roomID;
+        booking.UserID = req.userID;
+        booking.StartTime = req.starttime;
+        booking.EndTime = req.endtime;
 
-    db.SaveChanges();
+        db.SaveChanges();
 
-    return Ok(new { message = "Booking updated" });
-}
+        return Ok(new { message = "Booking updated" });
+    }
 }
