@@ -13,7 +13,7 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
     private readonly DatabaseContext db = db;
 
     [HttpPost("")]
-    public IActionResult CreateBooking([FromBody] NewRoomBookingRequest req)
+    public IActionResult CreateBooking([FromBody] NewRoomBookingRequest? req)
     {
         var request = Request;
         if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
@@ -72,6 +72,26 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
                         }
                     );
             }
+        }
+
+        if (req is null)
+        {
+            return BadRequest(
+                new
+                {
+                    message = "Empty request body"
+                }
+            );
+        }
+
+        if (req.UserID is null || req.RoomID is null || req.StartTime is null || req.EndTime is null)
+        {
+            return BadRequest(
+                new
+                {
+                    message = "Missing room fields"
+                }
+            );
         }
 
         Room? room = db.Rooms.Find(req.RoomID);
@@ -181,7 +201,7 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
             return Ok(db.RoomBookings.ToList());
         }
 
-        return Ok(db.RoomBookings.Where(u => u.ID == Convert.ToInt32(payload.Sub)).ToList());
+        return Ok(db.RoomBookings.Where(rb => rb.UserID == Convert.ToInt32(payload.Sub)).ToList());
     }
 
 

@@ -341,14 +341,6 @@ public class RoomController(DatabaseContext db) : ControllerBase {
                     }
                 );
 
-        Room? room = db.Rooms.Find(id);
-        if (room is null)
-            return NotFound(
-                new { 
-                        message = "Room not found" 
-                    }
-                );
-
         if (req is null)
         {
             return BadRequest(
@@ -368,6 +360,14 @@ public class RoomController(DatabaseContext db) : ControllerBase {
                 }
             );
         }
+
+        Room? room = db.Rooms.Find(id);
+        if (room is null)
+            return NotFound(
+                new { 
+                        message = "Room not found" 
+                    }
+                );
 
         room.Name = req.Name;
         db.SaveChanges();
