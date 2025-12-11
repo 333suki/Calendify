@@ -6,8 +6,6 @@ export default function Navigation() {
     const location = useLocation();
 
     const handleLogout = () => {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
         navigate("/");
     };
 

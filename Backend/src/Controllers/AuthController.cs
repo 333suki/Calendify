@@ -9,7 +9,8 @@ namespace Backend.Controllers;
 [Route("auth")]
 public class AuthController(DatabaseContext db) : ControllerBase {
     private readonly DatabaseContext db = db;
-    const int TokenDuration = 1200;
+    // const int TokenDuration = 1200;
+    public static readonly TimeSpan TokenDuration = new TimeSpan(0, 0, 10, 0);
 
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest? loginRequest) {
@@ -50,25 +51,50 @@ public class AuthController(DatabaseContext db) : ControllerBase {
         }
     
         // Generate refresh token
-        string refreshToken = TokenGenerator.GenerateRefreshToken();
-        
-        // Check if an entry in the RefreshTokens table is already present for that user
-        RefreshToken? refreshTokenEntry = db.RefreshTokens
-            .FirstOrDefault(t => t.UserID == user.ID);
-        if (refreshTokenEntry is not null) {
-            // If yes, update it
-            refreshTokenEntry.Token = refreshToken;
-        } else {
-            // Else create the entry
-            db.RefreshTokens.Add(new RefreshToken(refreshToken, user.ID));
-        }
-        db.SaveChanges();
+        // string refreshToken = TokenGenerator.GenerateRefreshToken();
+        //
+        // // Check if an entry in the RefreshTokens table is already present for that user
+        // RefreshToken? refreshTokenEntry = db.RefreshTokens
+        //     .FirstOrDefault(t => t.UserID == user.ID);
+        // if (refreshTokenEntry is not null) {
+        //     // If yes, update it
+        //     refreshTokenEntry.Token = refreshToken;
+        // } else {
+        //     // Else create the entry
+        //     db.RefreshTokens.Add(new RefreshToken(refreshToken, user.ID));
+        // }
+        // db.SaveChanges();
 
+        string accessToken = TokenGenerator.GenerateAccessToken((long)TokenDuration.TotalSeconds, user.ID.ToString(), user.Role);
+        Response.Cookies.Append(
+            "accessToken",
+            accessToken,
+            new CookieOptions {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+                Path = "/",
+                Expires = DateTimeOffset.UtcNow.Add(TokenDuration)
+            }
+        );
+        // Response.Cookies.Append(
+        //     "refreshToken",
+        //     refreshToken,
+        //     new CookieOptions {
+        //         HttpOnly = true,
+        //         Secure = false,
+        //         SameSite = SameSiteMode.Lax,
+        //         Path = "/",
+        //         Expires = DateTimeOffset.UtcNow.Add(TokenDuration)
+        //     }
+        // );
+        
         return Ok(
             new
             {
-                accessToken = TokenGenerator.GenerateAccessToken(TokenDuration, user.ID.ToString(), user.Role),
-                refreshToken
+                message = "Logged in successfully"
+                // accessToken,
+                // refreshToken
             }
         );
     }
@@ -115,149 +141,123 @@ public class AuthController(DatabaseContext db) : ControllerBase {
     }
 
 
-    
+    [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpPost("authorize")]
     public IActionResult Authorize() {
-        var request = Request;
-        if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
-            return Unauthorized();
-        }
-
-        if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
-            switch (result) {
-                case AuthUtils.TokenParseResult.InvalidFormat:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.Invalid:
-                    return Unauthorized();
-                case AuthUtils.TokenParseResult.TokenExpired:
-                    return StatusCode(498,
-                        new
-                        {
-                            message = "Token expired"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
-                case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
-                case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Header deserialization error"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.PayloadDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Payload deserialization error"
-                        }
-                    );
-            }
-        }
-    
         return Ok();
     }
 
         
-    [HttpPost("refresh")]
-    public IActionResult Refresh([FromBody] RefreshRequest? refreshRequest) {
-        var request = Request;
-        if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
-            return Unauthorized();
-        }
-        
-        if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
-            switch (result) {
-                case AuthUtils.TokenParseResult.InvalidFormat:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.Invalid:
-                    return Unauthorized();
-                case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
-                case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
-                case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Header deserialization error"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.PayloadDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Payload deserialization error"
-                        }
-                    );
-            }
-        }
-        
-        if (refreshRequest is null) {
-            return BadRequest(
-                new
-                {
-                    message = "Empty request body"
-                }
-            );
-        }
-
-        string? token = db.RefreshTokens
-            .Where(t => t.UserID.ToString() == payload.Sub)
-            .Select(t => t.Token)
-            .FirstOrDefault();
-
-        if (token is null) {
-            return Unauthorized();
-        }
-
-        if (token != refreshRequest.refreshToken) {
-            return Unauthorized();
-        }
-        
-        string newRefreshToken = TokenGenerator.GenerateRefreshToken();
-        RefreshToken? refreshTokenEntry = db.RefreshTokens
-            .FirstOrDefault(t => t.UserID.ToString() == payload!.Sub);
-        if (refreshTokenEntry is null) {
-            return NotFound(
-                new
-                {
-                    message = $"Refresh token for user with id {payload!.Sub} not found"
-                }
-            );
-        }
-        refreshTokenEntry.Token = newRefreshToken;
-        db.SaveChanges();
-
-        return Ok(
-            new
-            {
-                accessToken = TokenGenerator.GenerateAccessToken(TokenDuration, payload!.Sub, (Role)payload.Role),
-                refreshToken = newRefreshToken
-            }
-        );
-  
-    }
+    // [HttpPost("refresh")]
+    // public IActionResult Refresh([FromBody] RefreshRequest? refreshRequest) {
+    //     var request = Request;
+    //     if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
+    //         return Unauthorized();
+    //     }
+    //     
+    //     if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
+    //         switch (result) {
+    //             case AuthUtils.TokenParseResult.InvalidFormat:
+    //                 return BadRequest(
+    //                     new
+    //                     {
+    //                         message = "Invalid Authorization header"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.Invalid:
+    //                 return Unauthorized();
+    //             case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
+    //             case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
+    //             case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
+    //                 return BadRequest(
+    //                     new
+    //                     {
+    //                         message = "Invalid Authorization header"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.HeaderDeserializeError:
+    //                 return StatusCode(500,
+    //                     new
+    //                     {
+    //                         message = "Header deserialization error"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.PayloadDeserializeError:
+    //                 return StatusCode(500,
+    //                     new
+    //                     {
+    //                         message = "Payload deserialization error"
+    //                     }
+    //                 );
+    //         }
+    //     }
+    //     
+    //     if (refreshRequest is null) {
+    //         return BadRequest(
+    //             new
+    //             {
+    //                 message = "Empty request body"
+    //             }
+    //         );
+    //     }
+    //
+    //     string? token = db.RefreshTokens
+    //         .Where(t => t.UserID.ToString() == payload!.Sub)
+    //         .Select(t => t.Token)
+    //         .FirstOrDefault();
+    //
+    //     if (token is null) {
+    //         return Unauthorized();
+    //     }
+    //
+    //     if (token != refreshRequest.refreshToken) {
+    //         return Unauthorized();
+    //     }
+    //     
+    //     string newRefreshToken = TokenGenerator.GenerateRefreshToken();
+    //     RefreshToken? refreshTokenEntry = db.RefreshTokens
+    //         .FirstOrDefault(t => t.UserID.ToString() == payload!.Sub);
+    //     if (refreshTokenEntry is null) {
+    //         return NotFound(
+    //             new
+    //             {
+    //                 message = $"Refresh token for user with id {payload!.Sub} not found"
+    //             }
+    //         );
+    //     }
+    //     refreshTokenEntry.Token = newRefreshToken;
+    //     db.SaveChanges();
+    //
+    //     string accessToken = TokenGenerator.GenerateAccessToken((long)TokenDuration.TotalSeconds, payload!.Sub, (Role)payload.Role);
+    //     Response.Cookies.Append(
+    //         "accessToken",
+    //         accessToken,
+    //         new CookieOptions {
+    //             HttpOnly = true,
+    //             Secure = false,
+    //             SameSite = SameSiteMode.Lax,
+    //             Path = "/",
+    //             Expires = DateTimeOffset.UtcNow.Add(TokenDuration)
+    //         }
+    //     );
+    //     // Response.Cookies.Append(
+    //     //     "refreshToken",
+    //     //     newRefreshToken,
+    //     //     new CookieOptions {
+    //     //         HttpOnly = true,
+    //     //         Secure = false,
+    //     //         SameSite = SameSiteMode.Lax,
+    //     //         Path = "/",
+    //     //         Expires = DateTimeOffset.UtcNow.Add(TokenDuration)
+    //     //     }
+    //     // );
+    //     
+    //     return Ok(
+    //         new
+    //         {
+    //             accessToken,
+    //             newRefreshToken
+    //         }
+    //     );
+    // }
 }
