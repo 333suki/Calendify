@@ -4,9 +4,10 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    display: grid;
-    gap: 1rem;
-    grid-template-rows: 1fr 7fr;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    /*grid-template-rows: 1fr 7fr;*/
     padding: 1rem;
 }
 
@@ -22,4 +23,5 @@
     /*grid-template-columns: 1fr 3fr;*/
     display: flex;
     gap: 1rem;
+    flex: 1;
 }
