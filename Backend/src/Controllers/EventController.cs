@@ -130,6 +130,7 @@ public class EventController(DatabaseContext db) : ControllerBase {
             );
         }
 
+
         if (updateEventRequest.Title is not null)
         {
             eventToUpdate.Title = updateEventRequest.Title;
@@ -150,6 +151,19 @@ public class EventController(DatabaseContext db) : ControllerBase {
             {
                 message = "Event updated"
             }
+        );
+    }
+
+    [ServiceFilter(typeof(JwtAuthFilter))]
+    [HttpGet("")]
+    public IActionResult GetEventByDay([FromQuery(Name = "date")] string dateString)
+    {
+        var payload = HttpContext.Items["jwtPayload"] as Payload;
+        DateOnly? date = DateOnly.Parse(dateString);
+        var Events = db.Events
+        .Where(e => DateOnly.FromDateTime(e.Date?? DateTime.Now) == date);
+        return Ok(
+            Events
         );
     }
 }

@@ -78,9 +78,7 @@ export default function Navigation() {
                             left: 0,
                             background: "#3a475864",
                             // border: "1px solid #ccc",
-                            boxShadow: "0 4px 8px rgba(0,0,0,0.08)",
-                            zIndex: 20,
-                            minWidth: 140,
+                            boxShadow: "0 4px 8px rgba(0,0,0,0.08)"
                         }}
                     >
                         <div
