@@ -5,12 +5,8 @@ namespace Backend.Authorization;
 
 public class JwtAuthFilter : IAuthorizationFilter {
     public void OnAuthorization(AuthorizationFilterContext context) {
-        context.HttpContext.Request.Cookies.TryGetValue("accessToken", out var token);
-
-        if (token is null) {
-            token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-        }
-
+        string? token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+        
         if (token is null) {
             context.Result = new UnauthorizedResult();
             return;

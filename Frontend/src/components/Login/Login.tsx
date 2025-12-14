@@ -37,6 +37,10 @@ export default function Login() {
             }
 
             if (response.ok) {
+                if (data) {
+                    localStorage.setItem("accessToken", data.accessToken);
+                    localStorage.setItem("refreshToken", data.refreshToken);
+                }
                 navigate("/home");
             } else {
                 if (response.status === 404 || response.status === 400) {

@@ -8,6 +8,8 @@ export default function Navigation() {
     const [accountOpen, setAccountOpen] = useState(false);
 
     const handleLogout = () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken")
         navigate("/");
     };
 
