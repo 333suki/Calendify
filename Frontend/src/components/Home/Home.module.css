@@ -4,9 +4,9 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    display: grid;
-    grid-template-rows: 1fr 7fr;
-    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
     padding: 1rem;
 }
 
@@ -18,5 +18,6 @@
 
 .content {
     display: flex;
+    flex: 1;
     /* gap: 1rem; */
 }
