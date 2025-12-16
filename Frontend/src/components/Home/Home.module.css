@@ -7,6 +7,7 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    /*grid-template-rows: 1fr 7fr;*/
     padding: 1rem;
 }
 
@@ -17,7 +18,10 @@
 }
 
 .content {
+    /* border: 1px solid red; */
+    /*display: grid;*/
+    /*grid-template-columns: 1fr 3fr;*/
     display: flex;
+    gap: 1rem;
     flex: 1;
-    /* gap: 1rem; */
 }

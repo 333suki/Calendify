@@ -2,20 +2,23 @@ import styles from "./Home.module.css";
 import SmallAgenda from "../SmallAgenda";
 import Navigation from "../Navigation";
 import { useState } from 'react'
+import EventsPanel from "./EventsPanel";
 
 export default function Home() {
-    // const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    
     return (
         <div className={styles.mainContainer}>
             <div className ={styles.navigationContainer}>
                 <Navigation/>
             </div>
             <div className={styles.content}>
-                {/* <SmallAgenda 
+                <SmallAgenda 
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
-                /> */}
-                {/* {selectedDate?.toDateString()} */}
+                />
+                {/* {selectedDate.toDateString()} */}
+                <EventsPanel selectedDate={selectedDate}/>
             </div>
         </div>
     );
