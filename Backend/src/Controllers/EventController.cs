@@ -36,7 +36,7 @@ public class EventController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        if (newEventRequest.Title is null || newEventRequest.Description is null || newEventRequest.Date is null)
+        if (newEventRequest.Type is null || newEventRequest.Title is null || newEventRequest.Description is null || newEventRequest.Date is null)
         {
             return BadRequest(
                 new
@@ -46,7 +46,7 @@ public class EventController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        db.Events.Add(new Event(newEventRequest.Title, newEventRequest.Description, newEventRequest.Date));
+        db.Events.Add(new Event(newEventRequest.Type?? EventType.Event, newEventRequest.Title, newEventRequest.Description, newEventRequest.Date));
         db.SaveChanges();
 
         return Ok(
@@ -130,7 +130,10 @@ public class EventController(DatabaseContext db) : ControllerBase {
             );
         }
 
-
+        if (updateEventRequest.Type is not null)
+        {
+            eventToUpdate.Type = updateEventRequest.Type?? EventType.Event;
+        }
         if (updateEventRequest.Title is not null)
         {
             eventToUpdate.Title = updateEventRequest.Title;

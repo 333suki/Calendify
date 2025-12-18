@@ -2,4 +2,4 @@ using Backend.Models;
 
 namespace Backend.Dtos;
 
-public record UpdateEventRequest(string? Title, string? Description, DateTime? Date = null);
+public record UpdateEventRequest(Nullable<EventType> Type, string? Title, string? Description, DateTime? Date = null);

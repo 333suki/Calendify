@@ -5,8 +5,10 @@ namespace Backend.Models;
 
 public class Event
 {
-    public Event(string title, string description, DateTime? date)
+
+    public Event(EventType type, string title, string description, DateTime? date)
     {
+        this.Type = type;
         this.Title = title;
         this.Description = description;
         this.Date = date;
@@ -16,11 +18,25 @@ public class Event
     [Column(Order = 0)]
     public int ID { get; set; }
     [Column(Order = 1)]
-    public string Title { get; set; }
+    public EventType Type { get; set; }
     [Column(Order = 2)]
-    public string Description { get; set; }
+    public string Title { get; set; }
     [Column(Order = 3)]
+    public string Description { get; set; }
+    [Column(Order = 4)]
     public DateTime? Date { get; set; }
 
     public ICollection<EventAttendance> EventAttendances { get; set; } = new List<EventAttendance>();
+}
+
+public enum EventType : int
+{
+    Event,
+    Meeting,
+    Birthday,
+    Holiday,
+    Training,
+    Social,
+    Incident
+
 }
