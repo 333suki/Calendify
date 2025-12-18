@@ -73,16 +73,34 @@ public class AuthUtils {
                 return false;
             }
         }
-        
-        string headerJson = Encoding.UTF8.GetString(Base64UrlDecode(tokenSplit[0]));
+
+        string headerJson = "";
+        try {
+            headerJson = Encoding.UTF8.GetString(Base64UrlDecode(tokenSplit[0]));
+        }
+        catch {
+            result = TokenParseResult.Invalid;
+            header = null;
+            payload = null;
+            return false;
+        }
         if (String.IsNullOrEmpty(headerJson)) {
             result = TokenParseResult.HeaderNullOrEmpty;
             header = null;
             payload = null;
             return false;
         }
-        
-        string payloadJson = Encoding.UTF8.GetString(Base64UrlDecode(tokenSplit[1]));
+
+        string payloadJson = "";
+        try {
+            payloadJson = Encoding.UTF8.GetString(Base64UrlDecode(tokenSplit[1]));
+        }
+        catch {
+            result = TokenParseResult.Invalid;
+            header = null;
+            payload = null;
+            return false;
+        }
         if (String.IsNullOrEmpty(payloadJson)) {
             result = TokenParseResult.PayloadNullOrEmpty;
             header = null;
@@ -93,6 +111,14 @@ public class AuthUtils {
         Header? deserializedHeader = JsonSerializer.Deserialize<Header>(headerJson);
         if (deserializedHeader is null) {
             result = TokenParseResult.HeaderDeserializeError;
+            header = null;
+            payload = null;
+            return false;
+        }
+        
+        if (deserializedHeader.Alg != "HS256")
+        {
+            result = TokenParseResult.Invalid;
             header = null;
             payload = null;
             return false;
