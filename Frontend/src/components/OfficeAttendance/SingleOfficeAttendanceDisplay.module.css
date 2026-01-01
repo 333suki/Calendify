@@ -1,0 +1,33 @@
+.attendanceSelect {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background-color: transparent;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    color: #eceff4;
+    font-weight: bold;
+    /*font-size: 1.25rem;*/
+
+    background-image: linear-gradient(45deg, transparent 50%, #eceff460 50%), linear-gradient(135deg, #eceff460 50%, transparent 50%);
+    background-position: calc(100% - 16px) center, calc(100% - 10px) center;
+    background-size: 6px 6px;
+    background-repeat: no-repeat;
+
+    cursor: pointer;
+}
+
+.selected {
+    border: 2px solid cornflowerblue;
+}
+
+.attending {
+    background-color: rgba(42, 127, 42, 0.38);
+    color: rgb(34, 235, 34);
+}
+
+.absent {
+    background-color: rgba(127, 42, 42, 0.38);
+    color: rgb(189, 14, 14);
+}

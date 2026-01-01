@@ -4,10 +4,11 @@ import SingleEventDisplay from "./SingleEventDisplay";
 
 
 interface Event {
-  id: number
-  title: string
-  description: string
-  date: string
+    id: number,
+    type: number,
+    title: string
+    description: string
+    date: string
 }
 
 interface Props {
@@ -23,7 +24,7 @@ function formatDateYYYYMMDD(date: Date) {
     return `${year}-${month}-${day}`;
 }
 
-export default function EventsDisplay({date, isSelected, setSelectedDate}: Props) {
+export default function EventsDisplay({date, isSelected}: Props) {
     const [events, setEvents] = useState<Event[]>([])
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 

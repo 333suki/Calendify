@@ -10,7 +10,7 @@ namespace Backend.Controllers;
 public class AuthController(DatabaseContext db) : ControllerBase {
     private readonly DatabaseContext db = db;
     // const int TokenDuration = 1200;
-    public static readonly TimeSpan TokenDuration = new TimeSpan(0, 0, 10, 0);
+    public static readonly TimeSpan TokenDuration = new TimeSpan(1, 0, 0, 0);
 
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest? loginRequest) {
