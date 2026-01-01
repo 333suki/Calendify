@@ -1,14 +1,15 @@
 using Backend.Authorization;
 using Backend.Dtos;
 using Backend.Models;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
 [ApiController]
 [Route("officeattendance")]
-public class OfficeAttendanceController(DatabaseContext db) : ControllerBase {
-    private readonly DatabaseContext db = db;
+public class OfficeAttendanceController : ControllerBase {
+    private static readonly IOfficeAttendanceService _officeAttendanceService;
 
     [HttpPut("")]
 
@@ -90,33 +91,32 @@ public class OfficeAttendanceController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        OfficeAttendance? officeAttendance = db.OfficeAttendances
-        .FirstOrDefault(a => a.UserID == Convert.ToInt32(payload!.Sub) && a.Date == attendanceRequest.Date);
-        
-        if (officeAttendance is not null)
+        OfficeAttendance officeAttendance = _officeAttendanceService.CreateAttendance(Convert.ToInt32(payload!.Sub), attendanceRequest);
+
+        if(officeAttendance is null)
         {
-            officeAttendance.Status = attendanceRequest.AttendanceStatus;
-            db.SaveChanges();
-            return Ok(
+            return BadRequest(
+
                 new
                 {
-                    message = "Attendance updated"
+                    message = "Attendance not created or does not exist"
                 }
             );
+ 
         }
 
-        db.OfficeAttendances.Add(new OfficeAttendance(Convert.ToInt32(payload!.Sub), attendanceRequest.Date, attendanceRequest.AttendanceStatus));
-        db.SaveChanges();
         return Ok(
             new
             {
                 message = "Attendance registered"
             }
-        );
-    }
-    [HttpGet("")]
+            );  
 
-    public IActionResult CreateAttendance([FromQuery(Name = "date")] string dateString) {
+    }
+
+
+    [HttpGet("")]
+    public IActionResult GetAttendance([FromQuery(Name = "date")] string dateString) {
         var request = Request;
         if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
             return Unauthorized(
@@ -176,9 +176,7 @@ public class OfficeAttendanceController(DatabaseContext db) : ControllerBase {
             }
         }
 
-        DateOnly? date = DateOnly.Parse(dateString);
-        OfficeAttendance? officeAttendance = db.OfficeAttendances
-        .FirstOrDefault(a => a.Date == date && a.UserID == Convert.ToInt32(payload!.Sub));
+        OfficeAttendance? officeAttendance = _officeAttendanceService.GetAttendance(Convert.ToInt32(payload!.Sub), dateString);
 
         if (officeAttendance is null)
         {

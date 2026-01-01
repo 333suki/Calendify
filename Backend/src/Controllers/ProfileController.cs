@@ -1,14 +1,15 @@
 using Backend.Authorization;
 using Backend.Dtos;
 using Backend.Models;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
 [ApiController]
 [Route("profile")]
-public class ProfileController(DatabaseContext db) : ControllerBase {
-    private readonly DatabaseContext db = db;
+public class ProfileController : ControllerBase {
+    private static readonly IProfileService _profileService;
 
     [HttpGet("")]
     public IActionResult GetOwnProfileInfo() {
@@ -71,7 +72,7 @@ public class ProfileController(DatabaseContext db) : ControllerBase {
             }
         }
 
-        User? user = db.Users.FirstOrDefault(u => u.ID == Convert.ToInt32(payload.Sub));
+        User? user = _profileService.GetProfile(Convert.ToInt32(payload.Sub));
 
         if (user is null) {
             return NotFound();
@@ -87,95 +88,95 @@ public class ProfileController(DatabaseContext db) : ControllerBase {
         );
     }
     
-    [HttpGet("{userID:int}")]
-    public IActionResult GetProfileInfo(int userID) {
-        var request = Request;
-        if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
-            return Unauthorized(
-                new
-                {
-                    message = "No Authorization header provided"
-                }
-            );
-        }
+    // [HttpGet("{userID:int}")]
+    // public IActionResult GetProfileInfo(int userID) {
+    //     var request = Request;
+    //     if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
+    //         return Unauthorized(
+    //             new
+    //             {
+    //                 message = "No Authorization header provided"
+    //             }
+    //         );
+    //     }
         
-        if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
-            switch (result) {
-                case AuthUtils.TokenParseResult.InvalidFormat:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization token format"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.Invalid:
-                    return Unauthorized(
-                        new
-                        {
-                            message = "Invalid Authorization token"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.TokenExpired:
-                    return StatusCode(498,
-                        new
-                        {
-                            message = "Token expired"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
-                case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
-                case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Header deserialization error"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.PayloadDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Payload deserialization error"
-                        }
-                    );
-            }
-        }
+    //     if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
+    //         switch (result) {
+    //             case AuthUtils.TokenParseResult.InvalidFormat:
+    //                 return BadRequest(
+    //                     new
+    //                     {
+    //                         message = "Invalid Authorization token format"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.Invalid:
+    //                 return Unauthorized(
+    //                     new
+    //                     {
+    //                         message = "Invalid Authorization token"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.TokenExpired:
+    //                 return StatusCode(498,
+    //                     new
+    //                     {
+    //                         message = "Token expired"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
+    //             case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
+    //             case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
+    //                 return BadRequest(
+    //                     new
+    //                     {
+    //                         message = "Invalid Authorization header"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.HeaderDeserializeError:
+    //                 return StatusCode(500,
+    //                     new
+    //                     {
+    //                         message = "Header deserialization error"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.PayloadDeserializeError:
+    //                 return StatusCode(500,
+    //                     new
+    //                     {
+    //                         message = "Payload deserialization error"
+    //                     }
+    //                 );
+    //         }
+    //     }
         
-        if (payload!.Role!= (int)Role.Admin) {
-            return Unauthorized(
-                new {
-                    message = "User is not admin"
-                }
-            );
-        }
+    //     if (payload!.Role!= (int)Role.Admin) {
+    //         return Unauthorized(
+    //             new {
+    //                 message = "User is not admin"
+    //             }
+    //         );
+    //     }
 
-        User? user = db.Users.FirstOrDefault(u => u.ID == userID);
+    //     User? user = _profileService.GetProfile(userID);
 
-        if (user is null) {
-            return NotFound(
-                new
-                {
-                    message = "User not found"
-                }
-            );
-        }
+    //     if (user is null) {
+    //         return NotFound(
+    //             new
+    //             {
+    //                 message = "User not found"
+    //             }
+    //         );
+    //     }
 
-        return Ok(
-            new
-            {
-                username = user.Username,
-                email = user.Email,
-                role = user.Role
-            }
-        );
-    }
+    //     return Ok(
+    //         new
+    //         {
+    //             username = user.Username,
+    //             email = user.Email,
+    //             role = user.Role
+    //         }
+    //     );
+    // }
 
     [HttpPut("")]
     public IActionResult UpdateOwnProfile([FromBody] UpdateProfileRequest? updateRequest) {
@@ -265,7 +266,7 @@ public class ProfileController(DatabaseContext db) : ControllerBase {
             );
         }
         
-        if (db.Users.FirstOrDefault(u => u.Username == updateRequest.Username) is not null) {
+        if (_profileService.UsernameExists(updateRequest.Username) is false) {
             return Conflict(
                 new
                 {
@@ -274,7 +275,7 @@ public class ProfileController(DatabaseContext db) : ControllerBase {
             );
         }
         
-        User? user = db.Users.FirstOrDefault(u => u.ID == Convert.ToInt32(payload.Sub));
+        User? user = _profileService.UpdateProfile(Convert.ToInt32(payload.Sub), updateRequest);
 
         if (user is null) {
             return NotFound(
@@ -284,18 +285,6 @@ public class ProfileController(DatabaseContext db) : ControllerBase {
                 }
             );
         }
-
-        if (updateRequest.Username is not null) {
-            user.Username = updateRequest.Username;
-        }
-        if (updateRequest.Password is not null) {
-            user.Password = HashUtils.Sha256Hash(updateRequest.Password);
-        }
-        if (updateRequest.Role is not null && payload.Role == (int)Role.Admin) {
-            user.Role = updateRequest.Role.Value;
-        }
-
-        db.SaveChanges();
 
         return Ok(
             new
@@ -305,130 +294,130 @@ public class ProfileController(DatabaseContext db) : ControllerBase {
         );
     }
     
-    [HttpPut("{userID:int}")]
-    public IActionResult UpdateProfile([FromBody] UpdateProfileRequest? updateRequest, int userID) {
-        var request = Request;
-        if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
-            return Unauthorized(
-                new
-                {
-                    message = "No Authorization header provided"
-                }
-            );
-        }
+    // [HttpPut("{userID:int}")]
+    // public IActionResult UpdateProfile([FromBody] UpdateProfileRequest? updateRequest, int userID) {
+    //     var request = Request;
+    //     if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
+    //         return Unauthorized(
+    //             new
+    //             {
+    //                 message = "No Authorization header provided"
+    //             }
+    //         );
+    //     }
         
-        if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
-            switch (result) {
-                case AuthUtils.TokenParseResult.InvalidFormat:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization token format"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.Invalid:
-                    return Unauthorized(
-                        new
-                        {
-                            message = "Invalid Authorization token"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.TokenExpired:
-                    return StatusCode(498,
-                        new
-                        {
-                            message = "Token expired"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
-                case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
-                case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Header deserialization error"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.PayloadDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Payload deserialization error"
-                        }
-                    );
-            }
-        }
+    //     if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
+    //         switch (result) {
+    //             case AuthUtils.TokenParseResult.InvalidFormat:
+    //                 return BadRequest(
+    //                     new
+    //                     {
+    //                         message = "Invalid Authorization token format"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.Invalid:
+    //                 return Unauthorized(
+    //                     new
+    //                     {
+    //                         message = "Invalid Authorization token"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.TokenExpired:
+    //                 return StatusCode(498,
+    //                     new
+    //                     {
+    //                         message = "Token expired"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
+    //             case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
+    //             case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
+    //                 return BadRequest(
+    //                     new
+    //                     {
+    //                         message = "Invalid Authorization header"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.HeaderDeserializeError:
+    //                 return StatusCode(500,
+    //                     new
+    //                     {
+    //                         message = "Header deserialization error"
+    //                     }
+    //                 );
+    //             case AuthUtils.TokenParseResult.PayloadDeserializeError:
+    //                 return StatusCode(500,
+    //                     new
+    //                     {
+    //                         message = "Payload deserialization error"
+    //                     }
+    //                 );
+    //         }
+    //     }
 
-        if (payload!.Role!= (int)Role.Admin) {
-            return Unauthorized(
-                new {
-                    message = "User is not admin"
-                }
-            );
-        }
+    //     if (payload!.Role!= (int)Role.Admin) {
+    //         return Unauthorized(
+    //             new {
+    //                 message = "User is not admin"
+    //             }
+    //         );
+    //     }
         
-        if (updateRequest is null) {
-            return BadRequest(
-                new
-                {
-                    message = "Missing request body"
-                }
-            );
-        }
+    //     if (updateRequest is null) {
+    //         return BadRequest(
+    //             new
+    //             {
+    //                 message = "Missing request body"
+    //             }
+    //         );
+    //     }
         
-        if (updateRequest.Username is null && updateRequest.Password is null && updateRequest.Role is null && updateRequest.Role is null) {
-            return BadRequest(
-                new
-                {
-                    message = "Empty request body"
-                }
-            );
-        }
+    //     if (updateRequest.Username is null && updateRequest.Password is null && updateRequest.Role is null && updateRequest.Role is null) {
+    //         return BadRequest(
+    //             new
+    //             {
+    //                 message = "Empty request body"
+    //             }
+    //         );
+    //     }
         
-        if (db.Users.FirstOrDefault(u => u.Username == updateRequest.Username) is not null) {
-            return Conflict(
-                new
-                {
-                    message = "Username already taken"
-                }
-            );
-        }
+    //     if (db.Users.FirstOrDefault(u => u.Username == updateRequest.Username) is not null) {
+    //         return Conflict(
+    //             new
+    //             {
+    //                 message = "Username already taken"
+    //             }
+    //         );
+    //     }
         
-        User? user = db.Users.FirstOrDefault(u => u.ID == userID);
+    //     User? user = db.Users.FirstOrDefault(u => u.ID == userID);
 
-        if (user is null) {
-            return NotFound(
-                new
-                {
-                    message = "User not found"
-                }
-            );
-        }
+    //     if (user is null) {
+    //         return NotFound(
+    //             new
+    //             {
+    //                 message = "User not found"
+    //             }
+    //         );
+    //     }
 
-        if (updateRequest.Username is not null) {
-            user.Username = updateRequest.Username;
-        }
-        if (updateRequest.Password is not null) {
-            user.Password = HashUtils.Sha256Hash(updateRequest.Password);
-        }
-        if (updateRequest.Role is not null && payload.Role == (int)Role.Admin) {
-            user.Role = updateRequest.Role.Value;
-        }
+    //     if (updateRequest.Username is not null) {
+    //         user.Username = updateRequest.Username;
+    //     }
+    //     if (updateRequest.Password is not null) {
+    //         user.Password = HashUtils.Sha256Hash(updateRequest.Password);
+    //     }
+    //     if (updateRequest.Role is not null && payload.Role == (int)Role.Admin) {
+    //         user.Role = updateRequest.Role.Value;
+    //     }
 
-        db.SaveChanges();
+    //     db.SaveChanges();
 
-        return Ok(
-            new
-            {
-                message = "Profile updated successfully"
-            }
-        );
-    }
+    //     return Ok(
+    //         new
+    //         {
+    //             message = "Profile updated successfully"
+    //         }
+    //     );
+    // }
 }
