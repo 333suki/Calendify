@@ -1,10 +1,17 @@
 import styles from "./RoomBookingPanel.module.css";
-import RoomInfoPanel from "./RoomInfoPanel";
+import RoomDisplay from "./BookingDisplay";
+import Booking from "./CreateBooking";
+
+
+type Props = {
+    selectedDate: Date;
+};
 
 export default function RoomBookingPanel() {
     return (
         <div className={styles.mainContainer}>
-            <RoomInfoPanel/>
+            <Booking />
+            <RoomDisplay />
         </div>
     );
 }
