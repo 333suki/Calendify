@@ -1,6 +1,7 @@
 using Backend.Authorization;
 using Backend.Dtos;
 using Backend.Models;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
@@ -8,14 +9,17 @@ namespace Backend.Controllers;
 [ExtendCookie(0, 0, 10, 0)]
 [ApiController]
 [Route("room")]
-public class RoomController(DatabaseContext db) : ControllerBase {
-    private readonly DatabaseContext db = db;
+public class RoomController : ControllerBase {
+    private static readonly IRoomService _roomService;
 
     [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpGet("")]
     public IActionResult GetRooms()
     {
-        return Ok(db.Rooms);
+   
+        var rooms = _roomService.GetRooms();
+        return Ok(rooms);
+
     }
 
     [ServiceFilter(typeof(JwtAuthFilter))]
@@ -54,8 +58,8 @@ public class RoomController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        Room? room = db.Rooms.FirstOrDefault(r => r.Name == newRoomRequest.Name);
-        if(room is not null)
+        bool room = _roomService.CreateRoom(newRoomRequest.Name);
+        if(room is false)
         {
             return Conflict(
                 new
@@ -65,10 +69,6 @@ public class RoomController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        Room? newRoom = new Room(newRoomRequest.Name);
-
-        db.Rooms.Add(newRoom);
-        db.SaveChanges();
         return Ok(
             new 
             {
@@ -89,14 +89,23 @@ public class RoomController(DatabaseContext db) : ControllerBase {
                     }
                 );
 
-        Room? room = db.Rooms.Find(id);
-        if (room is null)
-            return NotFound(new { message = "Room not found" });
+        bool roomDeleted = _roomService.DeleteRoom(id);
 
-        db.Rooms.Remove(room);
-        db.SaveChanges();
+        if (roomDeleted is false)
+            return NotFound(
+                new 
+                { 
+                    message = "Room not found" 
+                }
+            );
 
-        return Ok(new { message = "Room deleted" });
+
+        return Ok(
+                    new 
+                    { 
+                        message = "Room deleted" 
+                    }
+                );
     }
     
     [ServiceFilter(typeof(JwtAuthFilter))]
@@ -131,16 +140,14 @@ public class RoomController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        Room? room = db.Rooms.Find(id);
-        if (room is null)
+        bool room = _roomService.UpdateRoom(id, req.Name);
+
+        if (room is false)
             return NotFound(
                 new { 
                         message = "Room not found" 
                     }
                 );
-
-        room.Name = req.Name;
-        db.SaveChanges();
 
         return Ok(
             new { 

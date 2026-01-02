@@ -1,6 +1,7 @@
 using Backend.Authorization;
 using Backend.Dtos;
 using Backend.Models;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
@@ -8,9 +9,11 @@ namespace Backend.Controllers;
 [ExtendCookie(0, 0, 10, 0)]
 [ApiController]
 [Route("room-bookings")]
-public class RoomBookingController(DatabaseContext db) : ControllerBase
+
+public class RoomBookingController : ControllerBase
+
 {
-    private readonly DatabaseContext db = db;
+    private static readonly IRoomBookingService _roomBookingService;
 
     [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpPost("")]
@@ -45,8 +48,8 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
             );
         }
 
-        Room? room = db.Rooms.Find(req.RoomID);
-        if (room is null) {
+        bool room = _roomBookingService.RoomExists(req.RoomID);
+        if (room is false) {
             return NotFound(
                 new {
                     message = "Room not found" 
@@ -54,29 +57,7 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
             );
         }
 
-        bool overlap = db.RoomBookings.Any(b =>
-            b.RoomID == req.RoomID &&
-            b.StartTime < req.EndTime &&
-            req.StartTime < b.EndTime
-        );
-
-        if (overlap) {
-            return Conflict(
-                new {
-                    message = "Room already booked in that time period" 
-                }
-            );
-        }
-
-        RoomBooking booking = new RoomBooking(
-            req.RoomID,
-            req.UserID,
-            req.StartTime,
-            req.EndTime
-        );
-
-        db.RoomBookings.Add(booking);
-        db.SaveChanges();
+        RoomBooking booking = _roomBookingService.CreateBooking(req);
 
         return Ok(
             new { 
@@ -91,18 +72,28 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
     {
         var payload = HttpContext.Items["jwtPayload"] as Payload;
         if (payload!.Role == (int)Role.Admin) {
-            return Ok(db.RoomBookings.ToList());
+            return Ok(_roomBookingService.GetBooking(Convert.ToInt32(payload.Sub), true).ToList());
         }
 
-        return Ok(db.RoomBookings.Where(rb => rb.UserID == Convert.ToInt32(payload.Sub)).ToList());
+        return Ok(_roomBookingService.GetBooking(Convert.ToInt32(payload.Sub), false).ToList());
     }
 
     [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpDelete("{id}")]
     public IActionResult DeleteBooking(int id)
     {
-        var payload = HttpContext.Items["jwtPayload"] as Payload;
-        RoomBooking? booking = db.RoomBookings.Find(id);
+      var payload = HttpContext.Items["jwtPayload"] as Payload;
+
+        if (payload!.Role != (int)Role.Admin)
+            return Unauthorized(
+                new {
+                        message = "User is not admin" 
+                    }
+                );
+
+        bool? booking = _roomBookingService.DeleteBooking(id);        
+        
+ 
         if (booking is null)
             return NotFound(
                 new { 
@@ -118,10 +109,12 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
             );
         }
 
-        db.RoomBookings.Remove(booking);
-        db.SaveChanges();
-
-        return Ok(new { message = "Booking deleted" });
+        return Ok(
+            new 
+            {
+                 message = "Booking deleted" 
+            }
+            );
     }
     
     [ServiceFilter(typeof(JwtAuthFilter))]
@@ -147,39 +140,23 @@ public class RoomBookingController(DatabaseContext db) : ControllerBase
             );
         }
         
-        RoomBooking? booking = db.RoomBookings.Find(id);
-        if (booking is null)
-            return NotFound(new { message = "Booking not found" });
+        
+        bool updatedBooking = _roomBookingService.UpdateBooking(id, req);
 
-        Room? room = db.Rooms.Find(req.RoomID);
-        if (room is null)
-            return NotFound(new { message = "Room not found" });
 
-        User? user = db.Users.Find(req.UserID);
-        if (user is null)
-            return NotFound(new { message = "User not found" });
+        if (updatedBooking is false)
+        {
+            return BadRequest(
+                new { 
+                    message = "Booking not updated" 
+                    }
+                ); 
+        }
 
-        bool overlap = db.RoomBookings.Any(b =>
-            b.ID != id &&  
-            b.RoomID == req.RoomID &&
-            b.StartTime < req.EndTime &&
-            req.StartTime < b.EndTime
-        );
-
-        if (overlap)
-            return Conflict(
-                new {
-                     message = "Room already booked in that time period" 
-                     }
-                    );
-
-        booking.RoomID = req.RoomID;
-        booking.UserID = req.UserID;
-        booking.StartTime = req.StartTime;
-        booking.EndTime = req.EndTime;
-
-        db.SaveChanges();
-
-        return Ok(new { message = "Booking updated" });
+        return Ok(
+                new { 
+                    message = "Booking updated" 
+                    }
+                );
     }
 }

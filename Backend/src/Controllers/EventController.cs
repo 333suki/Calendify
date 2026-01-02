@@ -1,17 +1,16 @@
 using Backend.Authorization;
 using Backend.Dtos;
 using Backend.Models;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
-[ExtendCookie(0, 0, 10, 0)]
 [ApiController]
 [Route("event")]
-public class EventController(DatabaseContext db) : ControllerBase {
-    private readonly DatabaseContext db = db;
-    
-    [ServiceFilter(typeof(JwtAuthFilter))]
+public class EventController : ControllerBase {
+    private static readonly IEventService _eventService;
+
     [HttpPost("")]
     public IActionResult CreateEvent([FromBody] NewEventRequest? newEventRequest)
     {
@@ -46,8 +45,8 @@ public class EventController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        db.Events.Add(new Event(newEventRequest.Type?? EventType.Event, newEventRequest.Title, newEventRequest.Description, newEventRequest.Date));
-        db.SaveChanges();
+        _eventService.Create(newEventRequest);
+
 
         return Ok(
             new
@@ -72,19 +71,15 @@ public class EventController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        Event? eventToDelete = db.Events.Find(id);
-        if (eventToDelete is null)
-        {
-            return NotFound(
-                new
-                {
-                    message = "Event not found"
-                }
-            );
-        }
+        bool deleted = _eventService.Delete(id);
 
-        db.Events.Remove(eventToDelete);
-        db.SaveChanges();
+        if (!deleted)
+        {
+            return NotFound(new
+            {
+                message = "Event not found"
+            });
+        }
 
         return Ok(
             new
@@ -119,42 +114,23 @@ public class EventController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        Event? eventToUpdate = db.Events.Find(id);
-        if (eventToUpdate is null)
-        {
-            return NotFound(
-                new
-                {
-                    message = "Event not found"
-                }
-            );
-        }
+        Event? updated = _eventService.Update(id, updateEventRequest);
 
-        if (updateEventRequest.Type is not null)
-        {
-            eventToUpdate.Type = updateEventRequest.Type?? EventType.Event;
-        }
-        if (updateEventRequest.Title is not null)
-        {
-            eventToUpdate.Title = updateEventRequest.Title;
-        }
-        if (updateEventRequest.Description is not null)
-        {
-            eventToUpdate.Description = updateEventRequest.Description;
-        }
-        if (updateEventRequest.Date is not null)
-        {
-            eventToUpdate.Date = updateEventRequest.Date;
-        }
+        if (updated is null)
 
-        db.SaveChanges();
-
-        return Ok(
-            new
+        {
+            return NotFound(new
             {
-                message = "Event updated"
-            }
-        );
+                message = "Event not found"
+            });
+        }
+
+        return Ok(new
+        {
+            message = "Event updated"
+        });
+
+        
     }
 
     [ServiceFilter(typeof(JwtAuthFilter))]

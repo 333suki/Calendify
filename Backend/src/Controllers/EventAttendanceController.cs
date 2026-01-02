@@ -1,6 +1,7 @@
 using Backend.Authorization;
 using Backend.Dtos;
 using Backend.Models;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,8 +10,8 @@ namespace Backend.Controllers;
 [ExtendCookie(0, 0, 10, 0)]
 [ApiController]
 [Route("eventattendance")]
-public class EventAttendanceController(DatabaseContext db) : ControllerBase {
-    private readonly DatabaseContext db = db;
+public class EventAttendanceController : ControllerBase {
+    private readonly IEventAttendanceService? _eventAttendanceService;
 
     [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpPut("")]
@@ -39,8 +40,8 @@ public class EventAttendanceController(DatabaseContext db) : ControllerBase {
         var payload = HttpContext.Items["jwtPayload"] as Payload;
         int userID = Convert.ToInt32(payload!.Sub);
 
-        Event? eventExists = db.Events.Find(attendanceRequest.EventID);
-        if (eventExists is null)
+        bool eventExists = _eventAttendanceService.EventExists(attendanceRequest.EventID.Value);
+        if (eventExists is false)
         {
             return NotFound(
                 new
@@ -50,21 +51,19 @@ public class EventAttendanceController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        EventAttendance? existingAttendance = db.EventAttendances
-            .FirstOrDefault(ea => ea.UserID == userID && ea.EventID == attendanceRequest.EventID);
+        bool alreadyRegistered = _eventAttendanceService.AttendanceExists(userID, attendanceRequest.EventID.Value);
 
-        if (existingAttendance is not null)
+        if (alreadyRegistered)
         {
             return Conflict(
                 new
-                {
-                    message = "Already registered for this event"
+                { 
+                    message = "Already registered for this event" 
                 }
             );
         }
 
-        db.EventAttendances.Add(new EventAttendance(userID, attendanceRequest.EventID.Value));
-        db.SaveChanges();
+        _eventAttendanceService.RegisterAttendance(userID, attendanceRequest);
 
         return Ok(
             new
@@ -81,18 +80,24 @@ public class EventAttendanceController(DatabaseContext db) : ControllerBase {
         var payload = HttpContext.Items["jwtPayload"] as Payload;
         int userID = Convert.ToInt32(payload!.Sub);
 
-        var attendances = db.EventAttendances
-            .Where(ea => ea.UserID == userID)
-            .Include(ea => ea.Event)
-            .Select(ea => new {
-                eventID = ea.EventID,
-                title = ea.Event.Title,
-                description = ea.Event.Description,
-                date = ea.Event.Date
-            })
-            .ToList();
+        var attendances = _eventAttendanceService.GetUserAttendances(userID);
 
         return Ok(attendances);
+
+        // int userID = Convert.ToInt32(payload!.Sub);
+
+        // var attendances = db.EventAttendances
+        //     .Where(ea => ea.UserID == userID)
+        //     .Include(ea => ea.Event)
+        //     .Select(ea => new {
+        //         eventID = ea.EventID,
+        //         title = ea.Event.Title,
+        //         description = ea.Event.Description,
+        //         date = ea.Event.Date
+        //     })
+        //     .ToList();
+
+        // return Ok(attendances);
     }
 
     [ServiceFilter(typeof(JwtAuthFilter))]
@@ -110,8 +115,8 @@ public class EventAttendanceController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        Event? eventExists = db.Events.Find(eventID);
-        if (eventExists is null)
+        bool? eventExists = _eventAttendanceService.EventExists(eventID);
+        if (eventExists is false)
         {
             return NotFound(
                 new
@@ -121,15 +126,17 @@ public class EventAttendanceController(DatabaseContext db) : ControllerBase {
             );
         }
 
-        var attendances = db.EventAttendances
-            .Where(ea => ea.EventID == eventID)
-            .Include(ea => ea.User)
-            .Select(ea => new {
-                userID = ea.UserID,
-                username = ea.User.Username,
-                email = ea.User.Email
-            })
-            .ToList();
+        var attendances =  _eventAttendanceService.GetEventAttendances(eventID);
+
+        // var attendances = db.EventAttendances
+        //     .Where(ea => ea.EventID == eventID)
+        //     .Include(ea => ea.User)
+        //     .Select(ea => new {
+        //         userID = ea.UserID,
+        //         username = ea.User.Username,
+        //         email = ea.User.Email
+        //     })
+        //     .ToList();
 
         return Ok(attendances);
     }
@@ -141,10 +148,8 @@ public class EventAttendanceController(DatabaseContext db) : ControllerBase {
         var payload = HttpContext.Items["jwtPayload"] as Payload;
         int userID = Convert.ToInt32(payload!.Sub);
 
-        EventAttendance? attendance = db.EventAttendances
-            .FirstOrDefault(ea => ea.UserID == userID && ea.EventID == eventID);
-
-        if (attendance is null)
+        bool? attendance = _eventAttendanceService.AttendanceExists(userID, eventID);
+        if (attendance is false)
         {
             return NotFound(
                 new
@@ -153,9 +158,7 @@ public class EventAttendanceController(DatabaseContext db) : ControllerBase {
                 }
             );
         }
-
-        db.EventAttendances.Remove(attendance);
-        db.SaveChanges();
+        _eventAttendanceService.UnregisterAttendance(userID, eventID);
 
         return Ok(
             new
