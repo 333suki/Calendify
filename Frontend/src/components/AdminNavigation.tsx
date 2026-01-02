@@ -20,6 +20,12 @@ export default function Navigation() {
                 Admin Events
             </div>
             <div
+                className={`${styles.menuItem} ${location.pathname === "/admin/rooms" ? styles.active : ""}`}
+                onClick={() => navigate("/admin/rooms")}
+            >
+                Admin Rooms
+            </div>
+            <div
                 className={`${styles.menuItem}`}
                 onClick={() => handleLogout()}
             >

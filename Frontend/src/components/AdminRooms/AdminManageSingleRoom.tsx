@@ -1,23 +1,16 @@
-import styles from "./AdminEventsPanel.module.css";
-import AdminCreateEventPanel from "./AdminCreateEventPanel.tsx";
-import AdminManageEventsPanel from "./AdminManageEventsPanel.tsx";
-import {useState} from "react";
+import styles from "./AdminManageSingleRoom.module.css";
 
-interface Event {
+interface Props {
     id: number,
-    type: number,
-    title: string
-    description: string
-    date: string
+    name: string
+    getRooms: () => Promise<void>
 }
 
-export default function AdminEventsPanel() {
-    const [events, setEvents] = useState<Event[]>([])
-
-    const getEvents = async () => {
+export default function AdminManageSingleRoom({id, name, getRooms}: Props) {
+    const deleteRoom = async () => {
         try {
-            let response = await fetch(`http://localhost:5117/event`, {
-                method: "GET",
+            let response = await fetch(`http://localhost:5117/room/${id}`, {
+                method: "DELETE",
                 headers: {
                     "Authorization": `${localStorage.getItem("accessToken")}`,
                 }
@@ -53,16 +46,15 @@ export default function AdminEventsPanel() {
                     console.log("Updated accessToken and refreshToken");
 
                     // Try again
-                    response = await fetch(`http://localhost:5117/event`, {
-                        method: "GET",
+                    response = await fetch(`http://localhost:5117/room/${id}`, {
+                        method: "DELETE",
                         headers: {
                             "Authorization": `${localStorage.getItem("accessToken")}`,
                         }
                     });
                 }
             }
-
-            setEvents(await response.json());
+            await getRooms();
         } catch (e) {
             console.error(e);
         }
@@ -70,8 +62,8 @@ export default function AdminEventsPanel() {
 
     return (
         <div className={styles.mainContainer}>
-            <AdminCreateEventPanel getEvents={getEvents}/>
-            <AdminManageEventsPanel events={events} getEvents={getEvents}/>
+            <h1 className={styles.roomName}>{name}</h1>
+            <button className={styles.deleteButton} type="button" onClick={deleteRoom}>Delete</button>
         </div>
     );
 }
