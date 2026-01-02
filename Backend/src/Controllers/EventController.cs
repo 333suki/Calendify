@@ -9,7 +9,12 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("event")]
 public class EventController : ControllerBase {
-    private static readonly IEventService _eventService;
+    private readonly IEventService _eventService;
+
+    public EventController(IEventService eventService)
+    {
+        _eventService = eventService;
+    }
 
     [HttpPost("")]
     public IActionResult CreateEvent([FromBody] NewEventRequest? newEventRequest)

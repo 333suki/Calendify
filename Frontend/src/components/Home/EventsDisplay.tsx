@@ -14,6 +14,7 @@ interface Event {
 interface Props {
     date: Date,
     isSelected: boolean,
+    setSelectedDate?: (date: Date) => void
 }
 
 function formatDateYYYYMMDD(date: Date) {
@@ -29,24 +30,6 @@ export default function EventsDisplay({date, isSelected}: Props) {
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     useEffect(() => {
-        // fetch(`http://localhost:5117/event?date=${formatDateYYYYMMDD(date)}`, {
-        //     method: "GET",
-        //     headers: {
-        //         "Authorization": `${localStorage.getItem("accessToken")}`,
-        //     }
-        // })
-        //
-        // .then((res) => {
-        //     if (!res.ok) {
-        //         console.error("Failed to fetch events")
-        //         console.error(res.status)
-        //     }
-        //     return res.json();
-        // })
-        // .then((data: Event[]) => {
-        //     setEvents(data);
-        // });
-
         const getEvents = async () => {
             try {
                 let response = await fetch(`http://localhost:5117/event?date=${formatDateYYYYMMDD(date)}`, {
@@ -102,7 +85,7 @@ export default function EventsDisplay({date, isSelected}: Props) {
         };
 
         getEvents();
-    }, []);
+    }, [date]);
 
     return (
         <div className={`${styles.mainContainer} ${isSelected ? styles.selected : ""}`}>
@@ -116,7 +99,7 @@ export default function EventsDisplay({date, isSelected}: Props) {
             </div>
             <div className={styles.singleEventDisplays}>
                 {[...events]
-                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                     .map((event) => (
                         <SingleEventDisplay
                             key={event.id}

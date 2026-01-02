@@ -1,0 +1,186 @@
+.mainContainer {
+    height: 100dvh;
+    background-image: url("../../assets/mountain-background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.navigationContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    display: flex;
+    flex: 1;
+    overflow-y: auto;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.formContainer {
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(30px);
+    border-radius: 1rem;
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.pageTitle {
+    font-size: 2rem;
+    color: #eceff4;
+    margin: 0;
+    font-weight: 600;
+    text-align: center;
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.message.success {
+    background: rgba(163, 190, 140, 0.2);
+    border: 2px solid #a3be8c;
+    color: #a3be8c;
+}
+
+.message.error {
+    background: rgba(191, 97, 106, 0.2);
+    border: 2px solid #bf616a;
+    color: #bf616a;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    color: #eceff4;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.input,
+.select,
+.textarea {
+    padding: 0.75rem;
+    background: rgba(236, 239, 244, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    color: #eceff4;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+    outline: none;
+    border-color: cornflowerblue;
+    background: rgba(236, 239, 244, 0.15);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+    color: #eceff460;
+}
+
+.textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+}
+
+.select {
+    cursor: pointer;
+}
+
+.select option {
+    background: #2e3440;
+    color: #eceff4;
+}
+
+.dateTimeGroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.submitButton,
+.cancelButton {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid;
+}
+
+.submitButton {
+    background: rgba(100, 149, 237, 0.3);
+    border-color: cornflowerblue;
+    color: cornflowerblue;
+}
+
+.submitButton:hover:not(:disabled) {
+    background: rgba(100, 149, 237, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(100, 149, 237, 0.3);
+}
+
+.submitButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cancelButton {
+    background: rgba(236, 239, 244, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #eceff4;
+}
+
+.cancelButton:hover {
+    background: rgba(236, 239, 244, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .dateTimeGroup {
+        grid-template-columns: 1fr;
+    }
+    
+    .buttonGroup {
+        flex-direction: column;
+    }
+}
