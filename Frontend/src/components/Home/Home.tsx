@@ -18,7 +18,10 @@ export default function Home() {
                     setSelectedDate={setSelectedDate}
                 />
                 {/* {selectedDate.toDateString()} */}
-                <EventsPanel selectedDate={selectedDate}/>
+                <EventsPanel 
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                />
             </div>
         </div>
     );

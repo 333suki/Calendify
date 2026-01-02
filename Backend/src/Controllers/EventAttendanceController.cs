@@ -13,6 +13,11 @@ namespace Backend.Controllers;
 public class EventAttendanceController : ControllerBase {
     private readonly IEventAttendanceService? _eventAttendanceService;
 
+    public EventAttendanceController(IEventAttendanceService eventAttendanceService)
+    {
+        _eventAttendanceService = eventAttendanceService;
+    }
+
     [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpPut("")]
     public IActionResult RegisterAttendance([FromBody] NewEventAttendanceRequest? attendanceRequest)

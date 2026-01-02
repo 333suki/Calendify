@@ -1,0 +1,220 @@
+.mainContainer {
+    height: 100dvh;
+    background-image: url("../../assets/mountain-background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.navigationContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.detailContainer {
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(30px);
+    border-radius: 1rem;
+    padding: 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow-y: auto;
+}
+
+.backButton {
+    background: rgba(236, 239, 244, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #eceff4;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    align-self: flex-start;
+}
+
+.backButton:hover {
+    background: rgba(236, 239, 244, 0.2);
+    border-color: cornflowerblue;
+}
+
+.eventCard {
+    background: rgba(236, 239, 244, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.eventHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.eventTitle {
+    font-size: 2.5rem;
+    color: #eceff4;
+    margin: 0;
+    font-weight: 600;
+}
+
+.eventType {
+    background: rgba(100, 149, 237, 0.3);
+    color: cornflowerblue;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.eventDateTime {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.dateTimeItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #eceff4;
+    font-size: 1.1rem;
+}
+
+.icon {
+    font-size: 1.5rem;
+}
+
+.eventDescription {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    color: #eceff4;
+    margin: 0;
+    font-weight: 600;
+}
+
+.eventDescription p {
+    color: #eceff4;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.attendanceSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.attendanceStatus {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+    color: #eceff4;
+}
+
+.registered {
+    color: #a3be8c;
+    font-weight: 600;
+}
+
+.notRegistered {
+    color: #eceff460;
+    font-weight: 600;
+}
+
+.actionButton {
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid;
+    align-self: flex-start;
+}
+
+.actionButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.registerButton {
+    background: rgba(100, 149, 237, 0.3);
+    border-color: cornflowerblue;
+    color: cornflowerblue;
+}
+
+.registerButton:hover:not(:disabled) {
+    background: rgba(100, 149, 237, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(100, 149, 237, 0.3);
+}
+
+.unregisterButton {
+    background: rgba(191, 97, 106, 0.3);
+    border-color: #bf616a;
+    color: #bf616a;
+}
+
+.unregisterButton:hover:not(:disabled) {
+    background: rgba(191, 97, 106, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(191, 97, 106, 0.3);
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.message.success {
+    background: rgba(163, 190, 140, 0.2);
+    border: 2px solid #a3be8c;
+    color: #a3be8c;
+}
+
+.message.error {
+    background: rgba(191, 97, 106, 0.2);
+    border: 2px solid #bf616a;
+    color: #bf616a;
+}
+
+.loadingMessage,
+.errorMessage {
+    color: #eceff460;
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 2rem;
+}
+
+.errorMessage {
+    color: #bf616a;
+}

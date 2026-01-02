@@ -255,7 +255,7 @@ public class AuthController(DatabaseContext db) : ControllerBase {
             new
             {
                 accessToken,
-                newRefreshToken
+                refreshToken = newRefreshToken
             }
         );
     }
