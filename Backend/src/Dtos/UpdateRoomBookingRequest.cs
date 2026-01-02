@@ -1,3 +1,3 @@
 namespace Backend.Dtos;
 
-public record class UpdateRoomBookingRequest(int roomID, int userID, DateTime starttime, DateTime endtime);
+public record class UpdateRoomBookingRequest(int RoomID, int UserID, DateTime StartTime, DateTime EndTime);

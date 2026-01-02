@@ -1,10 +1,11 @@
 .mainContainer {
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 0.5rem;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+
 }
 
 .dateText {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: space-between;
     padding: 0.5rem;
@@ -15,10 +16,16 @@
     color: #eceff460;
 }
 
-.selected {
+.selected .dateText {
     background: rgba(236, 239, 244, 0.1);
 }
 
 .selected .dateText .day {
     text-decoration: underline;
+}
+
+.singleAttendanceDisplays {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
 }

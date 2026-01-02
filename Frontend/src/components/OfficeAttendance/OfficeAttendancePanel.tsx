@@ -1,6 +1,5 @@
-import styles from "./EventsPanel.module.css"
-
-import EventDisplay from "./EventsDisplay";
+import styles from "./OfficeAttendancePanel.module.css"
+import OfficeAttendanceDisplay from "./OfficeAttendanceDisplay.tsx";
 
 interface Props {
     selectedDate: Date | null,
@@ -10,7 +9,7 @@ function getWeekDates(date: Date | null): Date[] {
     if (!date) {
         return [];
     }
-    const day = date.getDay(); 
+    const day = date.getDay();
     const sundayOffset = (day + 7) % 7;
 
     const sunday = new Date(date);
@@ -23,21 +22,21 @@ function getWeekDates(date: Date | null): Date[] {
     });
 }
 
-export default function EventsPanel({selectedDate, setSelectedDate}: Props) {
+export default function EventsPanel({selectedDate}: Props) {
     const weekDates = getWeekDates(selectedDate);
     const months = ["Januari", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
     return (
         <div className={styles.mainContainer}>
             {selectedDate &&
-            <div className={styles.monthDisplay}>
-                {months[selectedDate?.getMonth()] + " " + selectedDate?.getFullYear()}
-            </div>
+                <div className={styles.monthDisplay}>
+                    {months[selectedDate?.getMonth()] + " " + selectedDate?.getFullYear()}
+                </div>
             }
             <div className={styles.events}>
                 {weekDates.map(d => (
                     <div key={d.toISOString()}>
-                        <EventDisplay date={d} isSelected={d.getDay() == selectedDate?.getDay()}/>
+                        <OfficeAttendanceDisplay date={d} isSelected={d.getDay() == selectedDate?.getDay()}/>
                     </div>
                 ))}
             </div>

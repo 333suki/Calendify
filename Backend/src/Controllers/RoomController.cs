@@ -6,138 +6,27 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
+[ExtendCookie(0, 0, 10, 0)]
 [ApiController]
 [Route("room")]
 public class RoomController : ControllerBase {
     private static readonly IRoomService _roomService;
 
+    [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpGet("")]
     public IActionResult GetRooms()
     {
-        var request = Request;
-        if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
-            return Unauthorized(
-                new
-                {
-                    message = "No authorization header provided"
-                }
-            );
-        }
-        
-        if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
-            switch (result) {
-                case AuthUtils.TokenParseResult.InvalidFormat:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization token format"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.Invalid:
-                    return Unauthorized(
-                        new
-                        {
-                            message = "Invalid Authorization token"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.TokenExpired:
-                    return StatusCode(498,
-                        new
-                        {
-                            message = "Token expired"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
-                case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
-                case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Header deserialization error"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.PayloadDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Payload deserialization error"
-                        }
-                    );
-            }
-        }
+   
         var rooms = _roomService.GetRooms();
         return Ok(rooms);
+
     }
 
+    [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpPost("")]
     public IActionResult CreateRoom([FromBody] NewRoomRequest? newRoomRequest)
     {
-        var request = Request;
-        if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
-            return Unauthorized(
-                new
-                {
-                    message = "No authorization header provided"
-                }
-            );
-        }
-        
-        if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
-            switch (result) {
-                case AuthUtils.TokenParseResult.InvalidFormat:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.Invalid:
-                        return Unauthorized(
-                        new
-                        {
-                            message = "No authorization header provided"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.TokenExpired:
-                    return StatusCode(498,
-                        new
-                        {
-                            message = "Token expired"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
-                case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
-                case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Header deserialization error"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.PayloadDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Payload deserialization error"
-                        }
-                    );
-            }
-        }
-
+        var payload = HttpContext.Items["jwtPayload"] as Payload;
         if(payload!.Role != (int)Role.Admin)
         {
             return Unauthorized(
@@ -188,68 +77,11 @@ public class RoomController : ControllerBase {
         );
     }
 
+    [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpDelete("{id}")]
     public IActionResult DeleteRoom(int id)
     {
-        var request = Request;
-        if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
-            return Unauthorized(
-                new
-                {
-                    message = "No authorization header provided"
-                }
-            );
-        }
-        
-        if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
-            switch (result) {
-                case AuthUtils.TokenParseResult.InvalidFormat:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.Invalid:
-                        return Unauthorized(
-                        new
-                        {
-                            message = "No authorization header provided"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.TokenExpired:
-                    return StatusCode(498,
-                        new
-                        {
-                            message = "Token expired"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
-                case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
-                case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Header deserialization error"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.PayloadDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Payload deserialization error"
-                        }
-                    );
-            }
-        }
-
+        var payload = HttpContext.Items["jwtPayload"] as Payload;
         if (payload!.Role != (int)Role.Admin)
             return Unauthorized(
                 new { 
@@ -275,71 +107,12 @@ public class RoomController : ControllerBase {
                     }
                 );
     }
-
-
-
+    
+    [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpPut("{id}")]
     public IActionResult UpdateRoom(int id, [FromBody] UpdateRoomRequest? req)
     {
-        var request = Request;
-        if (!request.Headers.TryGetValue("Authorization", out var authHeader)) {
-            return Unauthorized(
-                new
-                {
-                    message = "No authorization header provided"
-                }
-            );
-        }
-        
-        if (!AuthUtils.ParseToken(authHeader.ToString(), out AuthUtils.TokenParseResult result, out Header? header, out Payload? payload)) {
-            switch (result) {
-                case AuthUtils.TokenParseResult.InvalidFormat:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.Invalid:
-                        return Unauthorized(
-                        new
-                        {
-                            message = "No authorization header provided"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.TokenExpired:
-                    return StatusCode(498,
-                        new
-                        {
-                            message = "Token expired"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderNullOrEmpty:
-                case AuthUtils.TokenParseResult.PayloadNullOrEmpty:
-                case AuthUtils.TokenParseResult.SignatureNullOrEmpty:
-                    return BadRequest(
-                        new
-                        {
-                            message = "Invalid Authorization header"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.HeaderDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Header deserialization error"
-                        }
-                    );
-                case AuthUtils.TokenParseResult.PayloadDeserializeError:
-                    return StatusCode(500,
-                        new
-                        {
-                            message = "Payload deserialization error"
-                        }
-                    );
-            }
-        }
-
+        var payload = HttpContext.Items["jwtPayload"] as Payload;
         if (payload!.Role != (int)Role.Admin)
             return Unauthorized(
                 new { 

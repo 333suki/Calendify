@@ -3,6 +3,7 @@ using System;
 using Backend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20251213235437_godknowswhatchanged")]
+    partial class godknowswhatchanged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
@@ -26,20 +29,16 @@ namespace Backend.Migrations
 
                     b.Property<DateTime?>("Date")
                         .HasColumnType("TEXT")
-                        .HasColumnOrder(4);
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnOrder(3);
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT")
-                        .HasColumnOrder(2);
-
-                    b.Property<int>("Type")
-                        .HasColumnType("INTEGER")
                         .HasColumnOrder(1);
 
                     b.HasKey("ID");

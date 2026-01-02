@@ -13,3 +13,5 @@
 
 Calendify.sln
 Backend/database.db
+Backend/database.db-wal
+Backend/database.db-shm

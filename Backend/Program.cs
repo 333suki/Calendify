@@ -1,4 +1,5 @@
 using Backend;
+using Backend.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Backend.Services;
 
@@ -8,6 +9,7 @@ builder.Services.AddCors(options => {
     options.AddPolicy("AllowLocalhost",
         policy => policy
             .WithOrigins("http://localhost:5173", "http://localhost:5174")
+            .AllowCredentials()
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
@@ -27,6 +29,9 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomBookingService, RoomBookingService>();
 
 
+
+
+builder.Services.AddScoped<JwtAuthFilter>();
 
 var app = builder.Build();
 app.UseCors("AllowLocalhost");

@@ -13,7 +13,6 @@ export default function ProtectedRoutes() {
                         "Authorization": `${localStorage.getItem("accessToken")}`,
                     }
                 });
-
                 if (response.status === 498) {
                     console.log("Got 498");
                     console.log("Doing refresh request");
@@ -27,7 +26,6 @@ export default function ProtectedRoutes() {
                             "refreshToken": `${localStorage.getItem("refreshToken")}`
                         })
                     });
-
                     let data = null;
                     const text = await response.text();
                     if (text) {
@@ -37,7 +35,6 @@ export default function ProtectedRoutes() {
                             console.error("Failed to parse JSON:", err);
                         }
                     }
-
                     if (response.ok) {
                         console.log("Refresh request OK");
                         if (data) {
