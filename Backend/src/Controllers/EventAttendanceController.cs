@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers;
 
-[ExtendCookie(0, 0, 10, 0)]
 [ApiController]
 [Route("eventattendance")]
 public class EventAttendanceController : ControllerBase {

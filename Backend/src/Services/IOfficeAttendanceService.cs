@@ -10,6 +10,4 @@ public interface IOfficeAttendanceService
   OfficeAttendance? GetAttendance(int UserID, string date);
 
   OfficeAttendance CreateAttendance(int userID, NewOfficeAttendanceRequest req);
-
 }
-

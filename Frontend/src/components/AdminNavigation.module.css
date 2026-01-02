@@ -1,0 +1,32 @@
+.navigation {
+    display: flex;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(30px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.menuItem {
+    padding: 12px 12px;
+    margin: 1rem;
+    color: #eceff4;
+    border-radius: 10px;
+    transition: background 0.3s ease;
+    font-size: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+.menuItem:hover {
+    background: rgba(236, 239, 244, 0.1);
+    cursor: pointer;
+}
+
+.menuItem.active {
+    background: rgba(236, 239, 244, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}

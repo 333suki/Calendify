@@ -6,13 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
-[ExtendCookie(0, 0, 10, 0)]
 [ApiController]
 [Route("profile")]
 public class ProfileController : ControllerBase {
-    private static readonly IProfileService _profileService;
+    private readonly IProfileService _profileService;
 
-    [ExtendCookie(0, 0, 10, 0)]
+    public ProfileController(IProfileService profileService) {
+        _profileService = profileService;
+    }
+    
     [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpGet("")]
     public IActionResult GetOwnProfileInfo() {

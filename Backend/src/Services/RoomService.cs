@@ -29,6 +29,7 @@ public class RoomService : IRoomService
 
         var room = new Room(name);
         _repo.Add(room);
+        _repo.SaveChanges();
         return true;
     }
 
@@ -39,6 +40,7 @@ public class RoomService : IRoomService
             return false;
 
         _repo.Delete(room);
+        _repo.SaveChanges();
         return true;
     
     }
@@ -51,8 +53,7 @@ public class RoomService : IRoomService
             return false;
 
         room.Name = name;
+        _repo.SaveChanges();
         return true;
     }
-
-
 }
