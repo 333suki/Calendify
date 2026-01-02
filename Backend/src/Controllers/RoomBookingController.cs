@@ -101,7 +101,7 @@ public class RoomBookingController : ControllerBase
                     }
                 );
         
-        if (payload!.Role != (int)Role.Admin && payload.Sub != booking.UserID.ToString()) {
+        if (payload!.Role != (int)Role.Admin && payload.Sub != id.ToString()) {
             return Unauthorized(
                 new {
                     message = "User can only delete their own booking"

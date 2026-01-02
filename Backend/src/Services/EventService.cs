@@ -15,7 +15,7 @@ public class EventService : IEventService
 
     public Event Create(NewEventRequest req)
     {
-        Event Event = new Event(req.Title!, req.Description!, req.Date);
+        Event Event = new Event(req.Type!.Value, req.Title!, req.Description!, req.Date);
         _repo.Add(Event);
         _repo.SaveChanges();
         return Event;  
@@ -67,7 +67,7 @@ public class EventService : IEventService
             return null;
         }
 
-        x.Title = req.Title;
+        x.Title = req.Title!;
         x.Description = x.Description;
         x.Date = x.Date;
 
@@ -76,4 +76,12 @@ public class EventService : IEventService
 
         return x;
     }
+
+    public IEnumerable<Event> GetByDay(DateOnly date)
+    {
+        return _repo.GetBy(e =>
+            DateOnly.FromDateTime(e.Date ?? DateTime.Now) == date
+        );
+    }
+
 }

@@ -19,5 +19,7 @@ public interface IEventService
   Event? Update(int id, UpdateEventRequest req);
   bool Delete(int id);
 
+  IEnumerable<Event> GetByDay(DateOnly date);
+
 }
 
