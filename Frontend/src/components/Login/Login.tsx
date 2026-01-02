@@ -5,6 +5,11 @@ import styles from "./Login.module.css";
 
 import personIcon from "../../assets/person.svg";
 
+const ROLE = {
+    ADMIN: 0,
+    USER: 1
+}
+
 export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -40,8 +45,12 @@ export default function Login() {
                 if (data) {
                     localStorage.setItem("accessToken", data.accessToken);
                     localStorage.setItem("refreshToken", data.refreshToken);
+                    if (data.role == ROLE.USER) {
+                        navigate("/home");
+                    } else if (data.role == ROLE.ADMIN) {
+                        navigate("/admin/events");
+                    }
                 }
-                navigate("/home");
             } else {
                 if (response.status === 404 || response.status === 400) {
                     setErrorMessage(data?.message || "Request failed");

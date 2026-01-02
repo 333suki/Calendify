@@ -16,9 +16,11 @@ public class EventController : ControllerBase {
         _eventService = eventService;
     }
 
+    [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpPost("")]
     public IActionResult CreateEvent([FromBody] NewEventRequest? newEventRequest)
     {
+        Console.WriteLine("Got create event request");
         var payload = HttpContext.Items["jwtPayload"] as Payload;
         if (payload!.Role != (int)Role.Admin)
         {
@@ -140,14 +142,30 @@ public class EventController : ControllerBase {
 
     [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpGet("")]
-    public IActionResult GetEventByDay([FromQuery(Name = "date")] string dateString)
+    public IActionResult GetEventByDay([FromQuery(Name = "date")] string? dateString)
     {
-        var payload = HttpContext.Items["jwtPayload"] as Payload;
-        DateOnly date = DateOnly.Parse(dateString);
+        if (dateString is null) {
+            var payload = HttpContext.Items["jwtPayload"] as Payload;
+            if (payload!.Role != (int)Role.Admin)
+            {
+                return Unauthorized(
+                    new
+                    {
+                        message = "User is not admin"
+                    }
+                );
+            }
 
-        var Events = _eventService.GetByDay(date);
+            return Ok(
+                _eventService.GetAll()
+            );
+        }
+        
+        DateOnly date = DateOnly.Parse(dateString!);
 
-        if(Events is null)
+        var events = _eventService.GetByDay(date);
+
+        if(events is null)
         {
             return NotFound(new
             {
@@ -156,7 +174,7 @@ public class EventController : ControllerBase {
         }
         
         return Ok(
-            Events
+            events
         );
     }
 }

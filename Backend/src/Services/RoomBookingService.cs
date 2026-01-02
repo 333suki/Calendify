@@ -56,6 +56,7 @@ public class RoomBookingService : IRoomBookingService
 
         var booking = new RoomBooking(req.RoomID, req.UserID, req.StartTime, req.EndTime);
         _roomBookingrepo.Add(booking);
+        _roomBookingrepo.SaveChanges();
         return booking;
     }
 
@@ -91,6 +92,7 @@ public class RoomBookingService : IRoomBookingService
         booking.UserID = req.UserID;
         booking.StartTime = req.StartTime;
         booking.EndTime = req.EndTime;
+        _roomBookingrepo.SaveChanges();
 
         return true;
     }

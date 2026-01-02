@@ -1,0 +1,22 @@
+.mainContainer {
+    height: 100dvh;
+    background-image: url("../../assets/mountain-background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.navigationContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    min-height: 0;
+    /*border: 1px solid red;*/
+}

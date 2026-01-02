@@ -52,6 +52,7 @@ public class ProfileService : IProfileService
             user.Password = HashUtils.Sha256Hash(req.Password);
         }
 
+        _repo.SaveChanges();
         return user;
     }
 

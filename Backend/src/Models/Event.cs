@@ -5,7 +5,6 @@ namespace Backend.Models;
 
 public class Event
 {
-
     public Event(EventType type, string title, string description, DateTime? date)
     {
         this.Type = type;
@@ -38,5 +37,4 @@ public enum EventType : int
     Training,
     Social,
     Incident
-
 }

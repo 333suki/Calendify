@@ -9,7 +9,6 @@ namespace Backend.Controllers;
 [Route("auth")]
 public class AuthController(DatabaseContext db) : ControllerBase {
     private readonly DatabaseContext db = db;
-    // const int TokenDuration = 1200;
     public static readonly TimeSpan TokenDuration = new TimeSpan(1, 0, 0, 0);
 
     [HttpPost("login")]
@@ -93,7 +92,8 @@ public class AuthController(DatabaseContext db) : ControllerBase {
             new
             {
                 accessToken,
-                refreshToken
+                refreshToken,
+                role = user.Role
             }
         );
     }
@@ -143,10 +143,14 @@ public class AuthController(DatabaseContext db) : ControllerBase {
     [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpPost("authorize")]
     public IActionResult Authorize() {
-        return Ok();
+        var payload = HttpContext.Items["jwtPayload"] as Payload;
+        return Ok(
+            new {
+                role = payload!.Role
+            }
+        );
     }
-
-        
+    
     [HttpPost("refresh")]
     public IActionResult Refresh([FromBody] RefreshRequest? refreshRequest) {
         var request = Request;

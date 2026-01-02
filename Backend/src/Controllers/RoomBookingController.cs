@@ -6,14 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
-[ExtendCookie(0, 0, 10, 0)]
 [ApiController]
 [Route("room-bookings")]
 
 public class RoomBookingController : ControllerBase
-
 {
-    private static readonly IRoomBookingService _roomBookingService;
+    private readonly IRoomBookingService _roomBookingService;
+
+    public RoomBookingController(IRoomBookingService roomBookingService) {
+        _roomBookingService = roomBookingService;
+    }
 
     [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpPost("")]
