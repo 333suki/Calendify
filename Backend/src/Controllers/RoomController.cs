@@ -19,10 +19,8 @@ public class RoomController : ControllerBase {
     [HttpGet("")]
     public IActionResult GetRooms()
     {
-   
         var rooms = _roomService.GetRooms();
         return Ok(rooms);
-
     }
 
     [ServiceFilter(typeof(JwtAuthFilter))]

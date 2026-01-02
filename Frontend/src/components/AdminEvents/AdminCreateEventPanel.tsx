@@ -111,7 +111,7 @@ export default function AdminCreateEventPanel({getEvents}: Props) {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<any>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const name = e.target.name;
         const value = e.target.value;
 

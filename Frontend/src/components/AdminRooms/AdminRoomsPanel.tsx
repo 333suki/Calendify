@@ -1,22 +1,19 @@
-import styles from "./AdminEventsPanel.module.css";
-import AdminCreateEventPanel from "./AdminCreateEventPanel.tsx";
-import AdminManageEventsPanel from "./AdminManageEventsPanel.tsx";
+import styles from "./AdminRoomsPanel.module.css";
 import {useState} from "react";
+import AdminCreateRoomPanel from "./AdminCreateRoomPanel.tsx";
+import AdminManageRoomsPanel from "./AdminManageRoomsPanel.tsx";
 
-interface Event {
+interface Room {
     id: number,
-    type: number,
-    title: string
-    description: string
-    date: string
+    name: string
 }
 
-export default function AdminEventsPanel() {
-    const [events, setEvents] = useState<Event[]>([])
+export default function AdminRoomsPanel() {
+    const [rooms, setRooms] = useState<Room[]>([])
 
-    const getEvents = async () => {
+    const getRooms = async () => {
         try {
-            let response = await fetch(`http://localhost:5117/event`, {
+            let response = await fetch(`http://localhost:5117/room`, {
                 method: "GET",
                 headers: {
                     "Authorization": `${localStorage.getItem("accessToken")}`,
@@ -53,7 +50,7 @@ export default function AdminEventsPanel() {
                     console.log("Updated accessToken and refreshToken");
 
                     // Try again
-                    response = await fetch(`http://localhost:5117/event`, {
+                    response = await fetch(`http://localhost:5117/room`, {
                         method: "GET",
                         headers: {
                             "Authorization": `${localStorage.getItem("accessToken")}`,
@@ -62,7 +59,7 @@ export default function AdminEventsPanel() {
                 }
             }
 
-            setEvents(await response.json());
+            setRooms(await response.json());
         } catch (e) {
             console.error(e);
         }
@@ -70,8 +67,8 @@ export default function AdminEventsPanel() {
 
     return (
         <div className={styles.mainContainer}>
-            <AdminCreateEventPanel getEvents={getEvents}/>
-            <AdminManageEventsPanel events={events} getEvents={getEvents}/>
+            <AdminCreateRoomPanel getRooms={getRooms}/>
+            <AdminManageRoomsPanel rooms={rooms} getRooms={getRooms}/>
         </div>
     );
 }

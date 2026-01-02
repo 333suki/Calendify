@@ -14,6 +14,7 @@ import Profile from "./components/Profile/Profile.tsx";
 import Settings from "./components/Settings/Settings.tsx";
 import RoomBookings from "./components/RoomBookings/RoomBookings.tsx";
 import OfficeAttendance from "./components/OfficeAttendance/OfficeAttendance.tsx";
+import AdminRooms from "./components/AdminRooms/AdminRooms.tsx";
 
 function App() {
     return (
@@ -32,6 +33,7 @@ function App() {
                 </Route>
                 <Route element={<AdminRoutes/>}>
                     <Route path="/admin/events" element={<AdminEvents/>} />
+                    <Route path="/admin/rooms" element={<AdminRooms/>} />
                 </Route>
             </Routes>
         </BrowserRouter>
