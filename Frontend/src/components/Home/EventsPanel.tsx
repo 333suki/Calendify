@@ -25,7 +25,7 @@ function getWeekDates(date: Date | null): Date[] {
 
 export default function EventsPanel({selectedDate}: Props) {
     const weekDates = getWeekDates(selectedDate);
-    const months = ["Januari", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
     return (
         <div className={styles.mainContainer}>
