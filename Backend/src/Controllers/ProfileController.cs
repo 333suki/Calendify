@@ -18,7 +18,7 @@ public class ProfileController : ControllerBase {
     public IActionResult GetOwnProfileInfo() {
 
      var payload = HttpContext.Items["jwtPayload"] as Payload;
-     User? user = _profileService.GetProfile(Convert.ToInt32(payload.Sub));
+     User? user = _profileService.GetProfile(Convert.ToInt32(payload!.Sub));
 
         if (user is null) {
             return NotFound();
@@ -103,6 +103,9 @@ public class ProfileController : ControllerBase {
     //             }
     //         );
     //     }
+
+
+    // met deze kan dus alleen de admin de profile info van een user krijgen (optioneel?)
     [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpGet("{userID:int}")]
     public IActionResult GetProfileInfo(int userID) {
@@ -112,30 +115,29 @@ public class ProfileController : ControllerBase {
                 new {
                     message = "User is not admin"
                 }
+                );
+            }
+
+        User? user = _profileService.GetProfile(userID);
+
+        if (user is null) {
+            return NotFound(
+                new
+                {
+                    message = "User not found"
+                }
             );
         }
 
-
-    //     User? user = _profileService.GetProfile(userID);
-
-    //     if (user is null) {
-    //         return NotFound(
-    //             new
-    //             {
-    //                 message = "User not found"
-    //             }
-    //         );
-    //     }
-
-    //     return Ok(
-    //         new
-    //         {
-    //             username = user.Username,
-    //             email = user.Email,
-    //             role = user.Role
-    //         }
-    //     );
-    // }
+        return Ok(
+            new
+            {
+                username = user.Username,
+                email = user.Email,
+                role = user.Role
+            }
+        );
+    }
 
     [ServiceFilter(typeof(JwtAuthFilter))]
     [HttpPut("")]
@@ -266,17 +268,18 @@ public class ProfileController : ControllerBase {
     //         );
     //     }
 
-    [ServiceFilter(typeof(JwtAuthFilter))]
-    [HttpPut("{userID:int}")]
-    public IActionResult UpdateProfile([FromBody] UpdateProfileRequest? updateRequest, int userID) {
-        var payload = HttpContext.Items["jwtPayload"] as Payload;
-        if (payload!.Role!= (int)Role.Admin) {
-            return Unauthorized(
-                new {
-                    message = "User is not admin"
-                }
-            );
-        }
+    // [ServiceFilter(typeof(JwtAuthFilter))]
+    // [HttpPut("{userID:int}")]
+    // public IActionResult UpdateProfile([FromBody] UpdateProfileRequest? updateRequest, int userID) {
+    //     var payload = HttpContext.Items["jwtPayload"] as Payload;
+    //     if (payload!.Role!= (int)Role.Admin) {
+    //         return Unauthorized(
+    //             new {
+    //                 message = "User is not admin"
+    //             }
+    //         );
+    //     }
+    // }
 
         
     //     if (updateRequest is null) {
@@ -336,4 +339,5 @@ public class ProfileController : ControllerBase {
     //         }
     //     );
     // }
+    
 }

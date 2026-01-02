@@ -138,9 +138,18 @@ public class EventController : ControllerBase {
     public IActionResult GetEventByDay([FromQuery(Name = "date")] string dateString)
     {
         var payload = HttpContext.Items["jwtPayload"] as Payload;
-        DateOnly? date = DateOnly.Parse(dateString);
-        var Events = db.Events
-        .Where(e => DateOnly.FromDateTime(e.Date?? DateTime.Now) == date);
+        DateOnly date = DateOnly.Parse(dateString);
+
+        var Events = _eventService.GetByDay(date);
+
+        if(Events is null)
+        {
+            return NotFound(new
+            {
+                message = "Event(s) not found"
+            });
+        }
+        
         return Ok(
             Events
         );

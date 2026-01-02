@@ -78,19 +78,19 @@ public class RoomBookingService : IRoomBookingService
         bool overlap = _roomBookingrepo
             .GetBy(b =>
                 b.ID != id &&
-                b.RoomID == req.roomID &&
-                b.StartTime < req.endtime &&
-                req.starttime < b.EndTime
+                b.RoomID == req.RoomID &&
+                b.StartTime < req.EndTime &&
+                req.StartTime < b.EndTime
             )
             .Any();
 
         if (overlap)
             return false;
 
-        booking.RoomID = req.roomID;
-        booking.UserID = req.userID;
-        booking.StartTime = req.starttime;
-        booking.EndTime = req.endtime;
+        booking.RoomID = req.RoomID;
+        booking.UserID = req.UserID;
+        booking.StartTime = req.StartTime;
+        booking.EndTime = req.EndTime;
 
         return true;
     }
