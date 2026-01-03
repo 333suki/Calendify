@@ -11,7 +11,7 @@ public interface IRoomBookingService
 
     bool BookingOverlap(int? roomId, DateTime? startTime, DateTime? endTime);
 
-    RoomBooking CreateBooking(NewRoomBookingRequest? req);
+    RoomBooking CreateBooking(int userID, NewRoomBookingRequest? req);
 
     bool DeleteBooking(int id);
 

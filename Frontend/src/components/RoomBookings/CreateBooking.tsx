@@ -1,82 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./CreateBooking.module.css";
-import { useNavigate } from "react-router-dom";
 
 interface Room{
     id: number,
     name: string
 }
 
-export default function CreateBooking() {
-    const navigate = useNavigate();
+interface Props {
+    rooms: Room[]
+    setRooms: (rooms: Room[]) => void
+    getRooms(): Promise<void>
+    handleTokenRefresh: () => Promise<Response | null>
+    getBookings: () => Promise<void>
+}
 
+export default function CreateBooking({rooms, setRooms, getRooms, handleTokenRefresh, getBookings}: Props) {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
-    const [rooms, setRooms] = useState<Room[]>([]);
 
     const [formData, setFormData] = useState({
         roomId: "",
-        name: "",
-        date: "",
-        time: ""    
+        startdate: "",
+        starttime: "",
+        enddate: "",
+        endtime: "",
     });
-
-    const handleTokenRefresh = async () => {
-        try {
-            const response = await fetch("http://localhost:5117/auth/refresh", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `${localStorage.getItem("accessToken")}`
-                },
-                body: JSON.stringify({
-                    refreshToken: `${localStorage.getItem("refreshToken")}`
-                })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                localStorage.setItem("accessToken", data.accessToken);
-                localStorage.setItem("refreshToken", data.refreshToken);
-                return response;
-            }
-        } catch (error) {
-            console.error("Token refresh failed:", error);
-        }
-        return null;
-    };
-
-    useEffect(() => {
-        const fetchRooms = async () => {
-            try {
-                let response = await fetch("http://localhost:5117/room-bookings", {
-                    headers: {
-                        "Authorization": `${localStorage.getItem("accessToken")}`
-                    }
-                });
-
-                if (response.status === 498) {
-                    const refreshResult = await handleTokenRefresh();
-                    if (refreshResult) {
-                        response = await fetch("http://localhost:5117/room-bookings", {
-                            headers: {
-                                "Authorization": `${localStorage.getItem("accessToken")}`
-                            }
-                        });
-                    }
-                }
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setRooms(data);
-                }
-            } catch (error) {
-                console.error("Error fetching rooms:", error);
-            }
-        };
-
-        fetchRooms();
-    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -84,7 +32,8 @@ export default function CreateBooking() {
         setMessage(null);
 
         try {
-            const dateTime = new Date(`${formData.date}T${formData.time}`);
+            const startDateTime = new Date(`${formData.startdate}T${formData.starttime}`);
+            const endDateTime = new Date(`${formData.enddate}T${formData.endtime}`);
 
             let response = await fetch("http://localhost:5117/room-bookings", {
                 method: "POST",
@@ -94,7 +43,8 @@ export default function CreateBooking() {
                 },
                 body: JSON.stringify({
                     roomId: Number(formData.roomId),
-                    date: dateTime.toISOString()
+                    startTime: startDateTime.toISOString(),
+                    endTime: endDateTime.toISOString(),
                 })
             });
 
@@ -109,7 +59,8 @@ export default function CreateBooking() {
                         },
                         body: JSON.stringify({
                             roomId: Number(formData.roomId),
-                            date: dateTime.toISOString()
+                            startTime: startDateTime.toISOString(),
+                            endTime: endDateTime.toISOString(),
                         })
                     });
                 } else {
@@ -120,13 +71,15 @@ export default function CreateBooking() {
             }
 
             if (response.ok) {
-                setMessage({ text: "booking created successfully!", type: "success" });
+                setMessage({ text: "Booking created successfully!", type: "success" });
                 setFormData({
                     roomId: "",
-                    name: "",
-                    date: "",
-                    time: ""
+                    startdate: "",
+                    starttime: "",
+                    enddate: "",
+                    endtime: "",
                 });
+                await getBookings();
             } else {
                 const data = await response.json();
                 setMessage({ text: data.message || "Failed to create booking", type: "error" });
@@ -185,13 +138,13 @@ export default function CreateBooking() {
                         <div className={styles.dateTimeGroup}>
                             <div className={styles.formGroup}>
                                 <label htmlFor="date" className={styles.label}>
-                                    Date
+                                    Start Date
                                 </label>
                                 <input
                                     type="date"
-                                    id="date"
-                                    name="date"
-                                    value={formData.date}
+                                    id="startdate"
+                                    name="startdate"
+                                    value={formData.startdate}
                                     onChange={handleChange}
                                     className={styles.input}
                                     required
@@ -200,13 +153,43 @@ export default function CreateBooking() {
 
                             <div className={styles.formGroup}>
                                 <label htmlFor="time" className={styles.label}>
-                                    Time
+                                    Start Time
                                 </label>
                                 <input
                                     type="time"
-                                    id="time"
-                                    name="time"
-                                    value={formData.time}
+                                    id="starttime"
+                                    name="starttime"
+                                    value={formData.starttime}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                    required
+                                />
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="date" className={styles.label}>
+                                    End Date
+                                </label>
+                                <input
+                                    type="date"
+                                    id="enddate"
+                                    name="enddate"
+                                    value={formData.enddate}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                    required
+                                />
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label htmlFor="time" className={styles.label}>
+                                    End Time
+                                </label>
+                                <input
+                                    type="time"
+                                    id="endtime"
+                                    name="endtime"
+                                    value={formData.endtime}
                                     onChange={handleChange}
                                     className={styles.input}
                                     required
