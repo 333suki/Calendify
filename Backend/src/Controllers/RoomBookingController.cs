@@ -32,20 +32,12 @@ public class RoomBookingController : ControllerBase
             );
         }
 
-        if (req.UserID is null || req.RoomID is null || req.StartTime is null || req.EndTime is null)
+        if (req.RoomID is null || req.StartTime is null || req.EndTime is null)
         {
             return BadRequest(
                 new
                 {
                     message = "Missing room fields"
-                }
-            );
-        }
-        
-        if (payload!.Role != (int)Role.Admin && payload.Sub != req.UserID.ToString()) {
-            return Unauthorized(
-                new {
-                    message = "User can only create a booking for themselves"
                 }
             );
         }
@@ -59,7 +51,7 @@ public class RoomBookingController : ControllerBase
             );
         }
 
-        RoomBooking booking = _roomBookingService.CreateBooking(req);
+        RoomBooking booking = _roomBookingService.CreateBooking(Convert.ToInt32(payload.Sub), req);
 
         return Ok(
             new { 
@@ -84,15 +76,7 @@ public class RoomBookingController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult DeleteBooking(int id)
     {
-      var payload = HttpContext.Items["jwtPayload"] as Payload;
-
-        if (payload!.Role != (int)Role.Admin)
-            return Unauthorized(
-                new {
-                        message = "User is not admin" 
-                    }
-                );
-
+        var payload = HttpContext.Items["jwtPayload"] as Payload;
         bool? booking = _roomBookingService.DeleteBooking(id);        
         
  

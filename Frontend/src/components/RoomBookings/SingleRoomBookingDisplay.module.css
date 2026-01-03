@@ -1,0 +1,36 @@
+.mainContainer {
+    /*height: 100%;*/
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(30px);
+    border-radius: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    /*flex: 1;*/
+    gap: 0.5rem;
+}
+
+.roomName {
+    color: #eceff4;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.startTime {
+    color: #eceff460;
+}
+
+.endTime {
+    color: #eceff460;
+}
+
+.deleteButton {
+    outline: none;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    color: #eceff4;
+    cursor: pointer;
+}

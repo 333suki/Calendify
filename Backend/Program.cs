@@ -28,9 +28,6 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomBookingService, RoomBookingService>();
 
-
-
-
 builder.Services.AddScoped<JwtAuthFilter>();
 
 var app = builder.Build();

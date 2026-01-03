@@ -1,9 +1,6 @@
 import styles from "./RoomBookings.module.css";
 import Navigation from "../Navigation";
 import RoomBookingPanel from "./RoomBookingPanel";
-import { useState } from "react";
-
-
 
 export default function RoomBookings() {
 
@@ -13,7 +10,6 @@ export default function RoomBookings() {
                 <Navigation/>
             </div>
             <div className={styles.content}>
-
                 <RoomBookingPanel/>
             </div>
         </div>

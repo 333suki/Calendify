@@ -3,13 +3,11 @@
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(30px);
     border-radius: 1rem;
-    padding: 15rem;
+    padding: 1rem;
     flex: 1;
     display: flex;
+    align-items: center;
+    justify-content: center;
     flex-direction: row;
     gap: 1rem;
 }
-
-
-
-

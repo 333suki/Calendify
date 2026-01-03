@@ -10,9 +10,10 @@ public class RoomBookingService : IRoomBookingService
     private readonly IRepository<Room> _roomrepo;
 
 
-    public RoomBookingService(IRepository<RoomBooking> repository)
+    public RoomBookingService(IRepository<RoomBooking> roomBookingRepository, IRepository<Room> roomRepository)
     {
-        _roomBookingrepo = repository;
+        _roomBookingrepo = roomBookingRepository;
+        _roomrepo = roomRepository;
     }
 
     public IEnumerable<RoomBooking> GetBooking(int id, bool isAdmin)
@@ -39,22 +40,22 @@ public class RoomBookingService : IRoomBookingService
 
     public bool RoomExists(int? id)
     {
-        Room room = _roomrepo.GetBy(b => b.ID == id).FirstOrDefault();
-        if (room == null)
+        Room? room = _roomrepo.GetBy(b => b.ID == id).FirstOrDefault();
+        if (room is null)
         {
             return false;
         }
         return true;
     }
 
-    public RoomBooking CreateBooking(NewRoomBookingRequest req)
+    public RoomBooking CreateBooking(int userID, NewRoomBookingRequest req)
     {
         if (BookingOverlap(req.RoomID, req.StartTime, req.EndTime))
         {
             return null;
         }
 
-        var booking = new RoomBooking(req.RoomID, req.UserID, req.StartTime, req.EndTime);
+        var booking = new RoomBooking(req.RoomID, userID, req.StartTime, req.EndTime);
         _roomBookingrepo.Add(booking);
         _roomBookingrepo.SaveChanges();
         return booking;
@@ -67,6 +68,7 @@ public class RoomBookingService : IRoomBookingService
             return false;
 
         _roomBookingrepo.Delete(booking);
+        _roomBookingrepo.SaveChanges();
         return true;
     }
 
