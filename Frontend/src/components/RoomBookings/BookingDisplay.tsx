@@ -25,7 +25,7 @@ interface Props {
     getBookings(): Promise<void>
 }
 
-export default function BookingDisplay({rooms, setRooms, getRooms, handleTokenRefresh, bookings, setBookings, getBookings}: Props) {
+export default function BookingDisplay({rooms, handleTokenRefresh, bookings, getBookings}: Props) {
     useEffect(() => {
         getBookings();
     }, []);

@@ -10,7 +10,7 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("eventattendance")]
 public class EventAttendanceController : ControllerBase {
-    private readonly IEventAttendanceService? _eventAttendanceService;
+    private readonly IEventAttendanceService _eventAttendanceService;
 
     public EventAttendanceController(IEventAttendanceService eventAttendanceService)
     {
