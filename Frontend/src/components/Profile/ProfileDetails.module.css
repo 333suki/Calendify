@@ -1,0 +1,30 @@
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.field label {
+    color: #9a9a9a;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.field input {
+    padding: 1rem;
+    border-radius: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: #9a9a9a22;
+    color: #eceff4;
+}
+
+.field p {
+    color: #eceff4;
+    margin-top: 0.5rem;
+}
