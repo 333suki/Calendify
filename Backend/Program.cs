@@ -27,6 +27,7 @@ builder.Services.AddScoped<IOfficeAttendanceService, OfficeAttendanceService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomBookingService, RoomBookingService>();
+builder.Services.AddScoped<IStreakService, StreakService>();
 
 builder.Services.AddScoped<JwtAuthFilter>();
 builder.Services.AddScoped<IEmailService, EmailService>();
