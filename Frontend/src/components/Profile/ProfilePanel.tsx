@@ -19,7 +19,7 @@ export default function ProfilePanel() {
 
   useEffect(() => {
     getOwnProfileInfo();
-  })
+  }, [])
 
   const getOwnProfileInfo = async () => {
     try {
