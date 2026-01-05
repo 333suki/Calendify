@@ -42,29 +42,38 @@ export default function Navigation() {
             >
                 Office Attendance
             </div>
-{/* 
+
             <div
                 className={`${styles.menuItem}  ${location.pathname === "/profile"? styles.active : ""}`}
                 onClick={() => navigate("/profile")}
             >
                 Profile
-            </div> */}
+            </div>
 
-            {/* <div
+            <div
                 className={`${styles.menuItem}  ${location.pathname === "/settings" ? styles.active : ""}`}
                 onClick={() => navigate("/settings")}
             >
                 Settings
-            </div> */}
+            </div>
 
-            <div className={styles.menuItem} style={{ position: "relative" }}>
+            <div
+                className={`${styles.menuItem} styles.active : ""}`}
+                onClick={() => handleLogout()}
+            >
+                Logout
+            </div>
+
+
+{/* The "account" button with dropdown */}
+            {/* <div className={styles.menuItem} style={{ position: "relative" }}>
                 <button
                     onClick={() => setAccountOpen((v) => !v)}
                     style={{
                         background: "transparent",
                         border: "transparent",
                         color: "white"}}
-                        
+
                 >
                     Account
                 </button>
@@ -78,7 +87,8 @@ export default function Navigation() {
                             left: 0,
                             background: "#3a475864",
                             // border: "1px solid #ccc",
-                            boxShadow: "0 4px 8px rgba(0,0,0,0.08)"
+                            boxShadow: "0 4px 8px rgba(0,0,0,0.08)",
+                            zIndex: 1000
                         }}
                     >
                         <div
@@ -113,7 +123,7 @@ export default function Navigation() {
                         </div>
                     </div>
                 )}
-            </div>
+            </div> */}
 
         </nav>
     );
