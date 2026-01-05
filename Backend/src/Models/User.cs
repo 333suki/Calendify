@@ -32,6 +32,7 @@ public class User
     public ICollection<EventAttendance> EventAttendances { get; set; } = new List<EventAttendance>();
     public ICollection<OfficeAttendance> OfficeAttendances { get; set; } = new List<OfficeAttendance>();
     public ICollection<RoomBooking> RoomBookings { get; set; } = new List<RoomBooking>();
+    public Streak Streak { get; set; }
 }
 
 public enum Role

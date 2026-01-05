@@ -14,6 +14,7 @@ public class DatabaseContext : DbContext
     public DbSet<OfficeAttendance> OfficeAttendances { get; set; }
     public DbSet<Room> Rooms { get; set; }
     public DbSet<RoomBooking> RoomBookings { get; set; }
+    public DbSet<Streak> Streaks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
@@ -80,6 +81,16 @@ public class DatabaseContext : DbContext
             .HasOne(rb => rb.User)
             .WithMany(u => u.RoomBookings)
             .HasForeignKey(rb => rb.UserID)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        // == Streak ==
+        modelBuilder.Entity<Streak>()
+            .HasKey(s => s.ID);
+
+        modelBuilder.Entity<Streak>()
+            .HasOne(s => s.User)
+            .WithOne(u => u.Streak)
+            .HasForeignKey<Streak>(s => s.UserID)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

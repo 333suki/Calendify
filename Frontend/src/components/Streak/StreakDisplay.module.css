@@ -1,0 +1,21 @@
+.mainContainer {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background-color: transparent;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.flameIcon img {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.countDisplay {
+    color: #eceff4;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
