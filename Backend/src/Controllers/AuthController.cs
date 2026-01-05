@@ -1,14 +1,17 @@
 using Backend.Authorization;
 using Backend.Dtos;
 using Backend.Models;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 
 namespace Backend.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AuthController(DatabaseContext db) : ControllerBase {
+public class AuthController(DatabaseContext db, IEmailService emailService) : ControllerBase {
     private readonly DatabaseContext db = db;
+    private readonly IEmailService _emailService = emailService;
     public static readonly TimeSpan TokenDuration = new TimeSpan(1, 0, 0, 0);
 
     [HttpPost("login")]
@@ -262,5 +265,55 @@ public class AuthController(DatabaseContext db) : ControllerBase {
                 refreshToken = newRefreshToken
             }
         );
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest? forgotPasswordRequest) {
+        if (forgotPasswordRequest is null || string.IsNullOrEmpty(forgotPasswordRequest.Email)) {
+            return BadRequest(new { message = "Email is required" });
+        }
+
+        User? user = db.Users.FirstOrDefault(u => u.Email == forgotPasswordRequest.Email);
+        if (user is null) {
+            return NotFound(new { message = "User not found" });
+        }
+
+        // Generate reset token
+        string resetToken = Guid.NewGuid().ToString();
+        user.ResetToken = resetToken;
+        user.ResetTokenExpiry = DateTime.UtcNow.AddHours(1); // Token valid for 1 hour
+        db.SaveChanges();
+
+        // Send email with reset token
+        try {
+            await _emailService.SendPasswordResetEmailAsync(user, resetToken);
+            return Ok(new { message = "Password reset email sent successfully" });
+        } catch (Exception ex) {
+            // Log the error, but don't expose it to the client
+            return StatusCode(500, new { message = "Failed to send email. Please try again later." });
+        }
+    }
+
+    [HttpPost("reset-password")]
+    public IActionResult ResetPassword([FromBody] ResetPasswordRequest? resetPasswordRequest) {
+        if (resetPasswordRequest is null || string.IsNullOrEmpty(resetPasswordRequest.Token) || string.IsNullOrEmpty(resetPasswordRequest.NewPassword)) {
+            return BadRequest(new { message = "Token and new password are required" });
+        }
+
+        User? user = db.Users.FirstOrDefault(u => u.ResetToken == resetPasswordRequest.Token);
+        if (user is null) {
+            return BadRequest(new { message = "Invalid token" });
+        }
+
+        if (user.ResetTokenExpiry < DateTime.UtcNow) {
+            return BadRequest(new { message = "Token expired" });
+        }
+
+        user.Password = HashUtils.Sha256Hash(resetPasswordRequest.NewPassword);
+        user.ResetToken = null;
+        user.ResetTokenExpiry = null;
+        db.SaveChanges();
+
+        return Ok(new { message = "Password reset successfully" });
     }
 }
