@@ -3,6 +3,7 @@ import styles from "./ProfilePanel.module.css";
 import ProfileHeader from "./ProfileHeader";
 import ProfileDetails from "./ProfileDetails";
 
+// Temp data
 export default function ProfilePanel() {
   const [profile, setProfile] = useState({
     username: "johndoe",
@@ -30,9 +31,9 @@ export default function ProfilePanel() {
 
   // Save changes (username/email/password)
   const handleSave = async () => {
-    // Frontend validation for password match
+    // Frontend validation msg for password match
     if (profile.newPassword && profile.newPassword !== profile.confirmPassword) {
-      setStatusMessage("New passwords do not match.");
+      setStatusMessage("Passwords do not match.");
       setStatusType("error");
       return;
     }
@@ -48,7 +49,7 @@ export default function ProfilePanel() {
       return;
     }
 
-    // Build payload for backend
+    // create a payload to send to the backend
     const payload: any = {
       Username: profile.username,
       Email: profile.email,
@@ -73,7 +74,7 @@ export default function ProfilePanel() {
         return;
       }
 
-      // Success: reset state
+      // On success reset the state
       setOriginalProfile({ ...profile, newPassword: "", confirmPassword: "" });
       setProfile((prev) => ({ ...prev, newPassword: "", confirmPassword: "" }));
       setIsEditing(false);
