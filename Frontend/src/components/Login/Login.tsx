@@ -84,7 +84,7 @@ export default function Login() {
                             {errorMessage && (<p className={styles.errorMessage}>{errorMessage}</p>)}
                         </div>
                         <div className={styles.forgot}>
-                            <a href="https://google.com">Forgot password</a>
+                            <a onClick={() => {navigate("/forgot-password")}}>Forgot password</a>
                         </div>
                     </div>
                     <button type="submit">Login</button>

@@ -24,6 +24,10 @@ public class User
     public string Password { get; set; }
     [Column(Order=4)]
     public Role Role { get; set; }
+    [Column(Order=5)]
+    public string? ResetToken { get; set; }
+    [Column(Order=6)]
+    public DateTime? ResetTokenExpiry { get; set; }
 
     public ICollection<EventAttendance> EventAttendances { get; set; } = new List<EventAttendance>();
     public ICollection<OfficeAttendance> OfficeAttendances { get; set; } = new List<OfficeAttendance>();

@@ -5,6 +5,8 @@ import Login from "./components/Login/Login.tsx";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import AdminRoutes from "./utils/AdminRoutes";
 import Register from "./components/Register/Register.tsx";
+import ForgotPassword from "./components/Login/ForgotPassword";
+import ResetPassword from "./components/Login/ResetPassword";
 
 // import Calendar from "./components/Calendar";
 import Events from "./components/Events/Events.tsx";
@@ -22,6 +24,8 @@ function App() {
             <Routes>
                 <Route path="/" element={<Login/>}/>
                 <Route path="/register" element={<Register/>}/>
+                <Route path="/forgot-password" element={<ForgotPassword/>}/>
+                <Route path="/reset-password" element={<ResetPassword/>}/>
                 <Route element={<ProtectedRoutes/>}>
                     <Route path="/home" element={<Home/>} />
                     <Route path="/room-bookings" element={<RoomBookings />} />
