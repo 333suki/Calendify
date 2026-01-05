@@ -290,7 +290,7 @@ public class AuthController(DatabaseContext db, IEmailService emailService) : Co
             return Ok(new { message = "Password reset email sent successfully" });
         } catch (Exception ex) {
             // Log the error, but don't expose it to the client
-            return StatusCode(500, new { message = "Failed to send email. Please try again later." });
+            return StatusCode(500, new { message = $" Failed to send email. Please try again later. {ex}" });
         }
     }
 

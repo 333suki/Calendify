@@ -11,10 +11,10 @@ public interface IRoomBookingService
 
     bool BookingOverlap(int? roomId, DateTime? startTime, DateTime? endTime);
 
-    RoomBooking CreateBooking(int userID, NewRoomBookingRequest? req);
+    RoomBooking? CreateBooking(int userID, NewRoomBookingRequest req);
 
     bool DeleteBooking(int id);
 
-    bool UpdateBooking(int id, UpdateRoomBookingRequest? req);
+    bool UpdateBooking(int id, UpdateRoomBookingRequest req);
  
 }

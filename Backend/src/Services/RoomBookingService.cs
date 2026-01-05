@@ -48,7 +48,7 @@ public class RoomBookingService : IRoomBookingService
         return true;
     }
 
-    public RoomBooking CreateBooking(int userID, NewRoomBookingRequest req)
+    public RoomBooking? CreateBooking(int userID, NewRoomBookingRequest req)
     {
         if (BookingOverlap(req.RoomID, req.StartTime, req.EndTime))
         {
