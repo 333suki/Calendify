@@ -1,0 +1,25 @@
+.header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    display: grid;
+    place-items: center;
+    font-size: 2.5rem;
+    color: #eceff4;
+}
+
+h1 {
+    color: #eceff4;
+    font-size: 2rem;
+}
+
+p {
+    color: #9a9a9a;
+}
