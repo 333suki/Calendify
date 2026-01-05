@@ -29,6 +29,7 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomBookingService, RoomBookingService>();
 
 builder.Services.AddScoped<JwtAuthFilter>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 app.UseCors("AllowLocalhost");
