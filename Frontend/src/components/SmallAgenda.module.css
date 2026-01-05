@@ -1,5 +1,16 @@
 .mainContainer {
-    /* border: 1px solid red; */
+}
+
+.mainContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--theme-overlay, transparent);
+    pointer-events: none;
+    transition: background 0.3s ease;
 }
 
 .pickerContainer :global(.rdp-root) {

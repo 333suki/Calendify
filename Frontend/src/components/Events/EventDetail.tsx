@@ -52,8 +52,6 @@ export default function EventDetail() {
 
     const fetchEventDetails = async () => {
         try {
-            // We need to fetch events and find the one with matching ID
-            // Since backend only has GET by date, we'll fetch from a range
             const today = new Date();
             const events: Event[] = [];
             

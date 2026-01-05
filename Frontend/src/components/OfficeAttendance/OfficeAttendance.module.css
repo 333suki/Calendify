@@ -1,22 +1,51 @@
 .mainContainer {
     height: 100dvh;
-    background-image: url("../../assets/mountain-background.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
     display: flex;
     flex-direction: column;
     gap: 2rem;
     padding: 1rem;
+    position: relative;
+    background-color: black; /* Fallback */
+}
+
+.mainContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../../assets/mountain-background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
+
+.mainContainer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--theme-overlay, transparent);
+    pointer-events: none;
+    transition: background 0.3s ease;
+    z-index: 0;
 }
 
 .navigationContainer {
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 1;
 }
 
 .content {
     display: flex;
     gap: 1rem;
     flex: 1;
+    position: relative;
+    z-index: 1;
 }

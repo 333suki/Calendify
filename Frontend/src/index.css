@@ -34,7 +34,26 @@ ul, ol {
 }
 
 .rdp-root {
-  --rdp-accent-color: red; /* Change the accent color to indigo. */
-  --rdp-accent-background-color: #f0f0f0; /* Change the accent background color. */
-  /* Add more CSS variables here. */
+  --rdp-accent-color: indigo;
+  --rdp-accent-background-color: #f0f0f0;
+}
+
+body {
+    transition: filter 0.3s ease;
+}
+
+body.theme-dark {
+    --theme-overlay: rgba(26, 32, 44, 0.5);
+}
+
+body.theme-blue {
+    --theme-overlay: rgba(15, 50, 100, 0.6);
+}
+
+body.theme-purple {
+    --theme-overlay: rgba(100, 30, 120, 0.6);
+}
+
+body.theme-green {
+    --theme-overlay: rgba(19, 78, 74, 0.6);
 }

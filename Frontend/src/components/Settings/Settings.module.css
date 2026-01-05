@@ -10,11 +10,134 @@
     padding: 1rem;
 }
 
+.mainContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--theme-overlay, transparent);
+    pointer-events: none;
+    transition: background 0.3s ease;
+}
+
 .navigationContainer {
     display: flex;
     flex-direction: column;
 }
 
 .content {
+    display: flex;
     flex: 1;
+    overflow: hidden;
+}
+
+.settingsContainer {
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(30px);
+    border-radius: 1rem;
+    padding: 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow-y: auto;
+}
+
+.pageTitle {
+    font-size: 2rem;
+    color: #eceff4;
+    margin: 0;
+    font-weight: 600;
+}
+
+.section {
+    margin-top: 1rem;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    color: #eceff4;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.themeGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.themeCard {
+    position: relative;
+    background: rgba(236, 239, 244, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.themeCard:hover {
+    background: rgba(236, 239, 244, 0.1);
+    border-color: cornflowerblue;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.themeCardActive {
+    background: rgba(236, 239, 244, 0.1);
+    border-color: cornflowerblue;
+    transform: translateY(-2px);
+}
+
+.colorPreview {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.colorCircle {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+}
+
+.themeName {
+    color: #eceff4;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: cornflowerblue;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.currentTheme {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: rgba(236, 239, 244, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #eceff4;
+    font-size: 0.95rem;
+}
+
+.themeBold {
+    font-weight: 600;
+}
+
+.comingSoon {
+    color: rgba(236, 239, 244, 0.6);
+    margin: 0;
 }

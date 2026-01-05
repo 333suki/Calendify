@@ -9,12 +9,16 @@
     gap: 2rem;
     /*grid-template-rows: 1fr 7fr;*/
     padding: 1rem;
+    position: relative;
 }
+
 
 .navigationContainer {
     /*border: 1px solid red;*/
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 1;
 }
 
 .content {
